@@ -7,7 +7,7 @@
    "sound": "fit/tick/domino",
    "takes": 3,
    "align": "onset",
-   "note": "first fix bracket and each variants beat; level: its loudest 50 ms matches the old sine tick (-14.8 LUFS). Jelte's pick B, 2026-10-25",
+   "note": "first fix bracket and each variants beat; level: its loudest 50 ms matches the old sine tick (-14.8 LUFS).",
    "edits": {
     "peak_db": -0.91
    }
@@ -25,7 +25,7 @@
    "sound": "fit/snap/switch_flip",
    "takes": 1,
    "align": "onset",
-   "note": "the details card's Switch band lands; level matches the tick",
+   "note": "the details card's band lands; level matches the tick",
    "edits": {
     "peak_db": -2.48
    }

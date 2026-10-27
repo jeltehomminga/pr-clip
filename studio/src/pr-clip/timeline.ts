@@ -113,8 +113,9 @@ export type PrClipProps = {
    * `commit`: the commit the clip was captured from; scripts/stale.sh compares it with the PR.
    * `base`: the before side (merge-base of an open PR, `<merge>^1` once merged).
    * `accepted`: the user's yes to keep the clip although the PR moved to `head`, and why.
+   * `checkout`: the local clone scripts fetch in (never in the agent context).
    */
-  pr?: { repo: string; number: number; commit?: string; base?: string; accepted?: { head: string; why: string } }
+  pr?: { repo: string; number: number; commit?: string; base?: string; checkout?: string; accepted?: { head: string; why: string } }
   /**
    * Agent context (scripts/context.ts), never in EXAMPLE: Root merges EXAMPLE under every
    * clip. A clip with `pr` needs `capture` and a `state.reach` on every pair and capture.
