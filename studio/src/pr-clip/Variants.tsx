@@ -29,8 +29,8 @@ type VariantsProps = {
 }
 
 /**
- * After-only variants of the fix side by side: the app in dark mode and French, the
- * web page in French, on a tablet and on a phone. Every frame is an after state, so
+ * After-only variants of the fix side by side: the app in dark mode and another language, the
+ * web page in another language, on a tablet and on a phone. Every frame is an after state, so
  * every chip is solid green and every ring is a fix ring. A recording plays from the rings.
  */
 export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, maxScreenHeight = webMax, mark }) => {

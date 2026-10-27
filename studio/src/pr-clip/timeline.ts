@@ -99,7 +99,7 @@ export type PrClipProps = {
   why: string
   platform: "app" | "web"
   pairs: Pair[]
-  /** App: dark mode and French. Web: French, tablet and mobile. Shown after the pairs, before the outro. */
+  /** App: dark mode and another language. Web: another language, tablet and mobile. Shown after the pairs, before the outro. */
   variants?: VariantGroup[]
   stage?: "light" | "dark"
   url?: string

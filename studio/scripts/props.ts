@@ -122,6 +122,8 @@ function main() {
     if (!merged && got.state !== "OPEN") fail(`${pr.repo}#${pr.number} is ${got.state}: no clip of a closed PR`)
     const git = (...args: string[]) => run("git", ["-C", pr.checkout!, ...args])
     // Open: after is the head, before its merge-base with the base branch. Merged: the merge commit and its parent.
+    // shortcut: a rebase merge has no merge commit of its own, so ^1 is wrong there; set pr.base by hand
+    // to <merge>~<number of PR commits> (references/worktrees.md).
     const after = merged ? (got.mergeCommit?.oid ?? fail(`${pr.repo}#${pr.number} is merged but has no merge commit`)) : got.headRefOid
     git("fetch", "-q", "origin")
     try {

@@ -3,13 +3,14 @@
 # would have stopped a take, checked on the device in about 15 s. Exits 1 on any FAIL row.
 #   scripts/app-preflight.sh <device> --port <metro port> [--app <bundle id>] [--scheme <dev-client scheme>]
 #                            [--worktree <dir> --fingerprint "<cmd>"] [--guard "<cmd>"]
-# Rows: device booted; with --worktree and --fingerprint, the dev client's Expo fingerprint against
+# Rows: device booted; with --worktree and --app, the dev client's Expo fingerprint against
 # the worktree's (a kept build from ~/.cache/pr-clip-devclients/ is installed on a mismatch); Metro
 # up on 127.0.0.1:<port> and serving one device only (another session's simulator re-attached to a
 # clip's Metro once); argent's watermark off; the status bar set (scripts/statusbar.sh) and proven
 # on a screenshot (scripts/statusbar-check.js); no LogBox; the clip's own guard (a preset's state, say).
-# --fingerprint runs in the worktree and prints the JSON of `expo-updates fingerprint:generate`, e.g.
-#   "npx expo-updates fingerprint:generate --platform $PLATFORM"  ($PLATFORM is ios or android).
+# --fingerprint runs in the worktree and prints the JSON of `expo-updates fingerprint:generate`; the
+# default is "npx expo-updates fingerprint:generate --platform $PLATFORM" ($PLATFORM is ios or
+# android). Pass your own when the app config needs env vars: "APP_VARIANT=dev npx … --platform $PLATFORM".
 set -uo pipefail
 usage='usage: scripts/app-preflight.sh <device> --port <port> [--app <id>] [--scheme <s>] [--worktree <dir> --fingerprint "<cmd>"] [--guard "<cmd>"]'
 dev=${1:?$usage}
@@ -45,8 +46,8 @@ fi
 # Native gate (references/worktrees.md): the dev client must match the worktree's fingerprint. An
 # emulator's quickboot once rolled the install back to an older build. A kept build is installed
 # (the login survives) and the app reattached to Metro; with none, this fails.
-if [ -n "$worktree" ] && [ -n "$fingerprint" ]; then
-  [ -n "$app" ] || { echo "--fingerprint needs --app <bundle id>" >&2; exit 2; }
+if [ -n "$worktree" ] && [ -n "$app" ]; then
+  fingerprint=${fingerprint:-'npx expo-updates fingerprint:generate --platform $PLATFORM'}
   want=$(cd "$worktree" && PLATFORM=$platform bash -c "$fingerprint" 2>/dev/null | jq -r '.hash // empty')
   if [ $platform = ios ]; then
     have=$(cat "$(xcrun simctl get_app_container "$dev" $app 2>/dev/null)/EXUpdates.bundle/fingerprint" 2>/dev/null)

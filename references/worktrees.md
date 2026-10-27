@@ -26,7 +26,7 @@ Read the PR with `gh pr view <n> --json state,headRefOid,baseRefName,mergeCommit
 - **Merged PR:**
   - Merge commit: `<after>` is the merge commit, `<before>` is `<merge>^1`.
   - Squash merge: the commit has one parent, so `<merge>^1` is the commit before the PR.
-  - Rebase merge: there is no merge commit of the PR's own. `mergeCommit` is the last rebased commit; count back the PR's commits: `<before>` is `<merge>~<number of commits>`.
+  - Rebase merge: there is no merge commit of the PR's own. `mergeCommit` is the last rebased commit; count back the PR's commits: `<before>` is `<merge>~<number of commits>`. `props.ts` assumes a merge or squash merge (`<merge>^1`), so set `pr.base` by hand here.
 
 Record both in `props.json`: `pr.commit` is `<after>`, `pr.base` is `<before>`. Add a "Captured commit" line to `review.md`. `scripts/stale.sh` compares `pr.commit` with the PR later.
 
