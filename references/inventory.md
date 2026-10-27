@@ -91,7 +91,7 @@ Leave these out, and log each with its reason:
    - Web: second language · Tablet · Mobile. A web PR always shows the phone view. When the PR changes an interaction, record it there (`web-record.js --mobile`).
 4. **The details card**, when `props.json` has `details`.
 
-Draft the props, then check the length:
+Draft the props, then check the length. The media don't exist yet, so give each capture a placeholder `file`, the size it will have (1206×2622 for an iPhone 17 Pro, 2700×1520 for a 1350×760@2 page) and, for a recording, a `trimAfter` of its expected length in frames:
 
 ```bash
 node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/frames.ts videos/<KEY>/props.json
@@ -115,7 +115,7 @@ The studio enforces these rules. Plan the inventory with them in mind.
 - **The details card** closes every clip that has `details`.
   - Right side: the first pair's after state again, so anyone who jumps to the end still sees the change.
   - Facts come only from what exists when the clip is made, and nothing that goes stale once posted: no review status and no reviewers while the PR is open.
-  - Before the merge: Developer · Screen · Captured. After it: Developer · Reviewers · Merged · First build · Screen · Captured.
+  - Before the merge: Developer · Screen · Captured. After it: Developer · Reviewers · Merged · Release or First build · Screen · Captured.
 
 ## Ask the user only when
 

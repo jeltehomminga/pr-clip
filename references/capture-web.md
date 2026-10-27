@@ -114,7 +114,7 @@ node scripts/web-record.js 9333 <url-substr> videos/<KEY>/media/01-before.mp4 \
 Drive the take from a second CDP session while `web-record.js` films: start the recorder, wait 0.8 s, run the driver. Use the same driver and timings on both sides. Write it as `videos/<KEY>/capture/drive.js`, with `Input.dispatchMouseEvent`, `Input.dispatchKeyEvent`, `Input.insertText` and `Input.dispatchTouchEvent`.
 
 - **Mouse.** Screencast frames carry no cursor. The driver injects a grey dot that follows `pointermove` and stands in for it. Click a field in its left padding, so the dot leaves the text clear.
-- **Keys.** Show them the way CleanShot X does: a dark pill with white key names.
+- **Keys.** Show them in a dark pill with white key names, as screen recorders do.
   - One burst adds up ("Tab → → → End"), and the newest key pops in.
   - The pill stays 2.5 s after the last key, so the held end frame still shows what was pressed.
   - Without it, the before side of a keyboard pair looks frozen, and the after side seems to move by itself.

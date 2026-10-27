@@ -7,7 +7,7 @@ A Claude Code skill that makes before/after video clips of a pull request: the o
 1. Unzip into your skills folder, so this file sits at `~/.claude/skills/pr-clip/README.md`.
 2. Ask Claude Code for "a PR clip of <owner/repo>#<number>". On first use it copies `studio/` to `~/pr-clip-studio` (or `$PR_CLIP_STUDIO`) and sets it up: SKILL.md § Setup.
 
-Needs macOS for app captures (iOS simulator, Android emulator); web clips need Chrome. Also: Node 24+, ffmpeg, jq, the `gh` CLI, and Homebrew for the voice and simslim.
+Written for macOS and Claude Code. Needs Node 24+, ffmpeg, jq, bc, the `gh` CLI and Homebrew; Chrome for web clips; Xcode and/or the Android SDK, a built Expo dev client, argent and simslim for app clips. SKILL.md § Setup has the commands.
 
 ## What's inside
 

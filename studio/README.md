@@ -4,6 +4,7 @@ Remotion 4.0.520 studio for before/after clips of pull requests. House rules: `C
 
 ```bash
 npm ci
+scripts/setup-tts.sh                 # once: the Kokoro voice (needs `brew install python@3.13`)
 npm run studio                       # live preview of videos/EXAMPLE
 npm test                             # timeline, props, stale and capture checks + type-check
 scripts/clip.sh <KEY>                # props, test, render, stills, check, sheets in one call

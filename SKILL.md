@@ -12,12 +12,14 @@ Read `references/*.md` only by the sections a step names: `grep -n '^## ' refere
 
 ## Setup (once per machine)
 
-1. Studio: `cp -R <this skill>/studio "${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}" && cd "$_" && npm ci && npm test`. It needs Node 24 or later (it runs `.ts` files directly), ffmpeg and ffprobe, jq and bc. Keep the copy in git if you like; `videos/*` stays out except `EXAMPLE`.
-2. Voice: `scripts/setup-tts.sh` (Homebrew Python 3.13, a venv with kokoro-onnx, about 340 MB of model files).
+The skill is written for macOS (`open`, `xcrun`, Homebrew) and Claude Code (its subagents). Base tools: Node 24 or later (the studio runs `.ts` files directly), ffmpeg and ffprobe, jq, bc and the `gh` CLI (`brew install node ffmpeg jq gh`).
+
+1. Studio: the target must not exist yet, or `cp -R` nests the folder inside it: `dest="${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}"; [ ! -e "$dest" ] && cp -R <this skill>/studio "$dest" && cd "$dest" && npm ci && npm test`. Keep the copy in git if you like; `videos/*` stays out except `EXAMPLE`.
+2. Voice (needed for voiced clips): `brew install python@3.13`, then `scripts/setup-tts.sh` (a venv with kokoro-onnx and about 340 MB of model files).
 3. GitHub: `gh auth status` must show a login that can read the repo.
-4. Web: a Chrome of its own on port 9333 with a scratch profile, signed in to the test environment by hand once: `open -na "Google Chrome" --args --remote-debugging-port=9333 --user-data-dir="$HOME/.cache/pr-clip-chrome"`. Never use the user's everyday browser profile.
-5. App: argent (`npm i -g @swmansion/argent && argent init -y`, then `argent disable video-watermark` and `argent telemetry disable`), and simslim for a clean simulator per clip (`brew install mobai-app/tap/simslim`). `references/capture-app.md` § Tools.
-6. Render once to prove it: `scripts/clip.sh EXAMPLE` must exit 0.
+4. Web clips: a Chrome of its own on port 9333 with a scratch profile, signed in to the test environment by hand once: `open -na "Google Chrome" --args --remote-debugging-port=9333 --user-data-dir="$HOME/.cache/pr-clip-chrome"`. Never use the user's everyday browser profile.
+5. App clips: Xcode with its command-line tools (`xcrun simctl`) for iOS, the Android SDK (`adb`, an emulator) for Android, and your Expo dev client built once on the device (`references/worktrees.md` § Native gate). Then argent (`npm i -g @swmansion/argent && argent init -y`, then `argent disable video-watermark` and `argent telemetry disable`) and simslim for a clean simulator per clip (`brew install mobai-app/tap/simslim`): `references/capture-app.md` § Tools.
+6. Render once to prove it: `scripts/clip.sh EXAMPLE` must exit 0. The first render downloads Remotion's own headless Chrome (about 100 MB), so it needs the network.
 
 Licences: Remotion is free for individuals and companies of up to 3 people; a bigger company needs a Remotion company licence (remotion.dev/license). argent's source is Apache-2.0, but some of its binaries are proprietary.
 
@@ -30,7 +32,7 @@ Licences: Remotion is free for individuals and companies of up to 3 people; a bi
 
 ## Making a clip
 
-Start a clip in a fresh session in the PR's repo, never at the end of a long session: every turn carries the whole context. `<KEY>` is the clip's folder under `videos/`, for example `shop-42` for PR #42 of `acme/shop`. All studio commands run in the studio; `node` below means `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON`.
+Start a clip in a fresh session in the PR's repo, never at the end of a long session: every turn carries the whole context. `<KEY>` is the clip's folder under `videos/`, for example `shop-42` for PR #42 of `acme/shop`. props.json calls it `issueKey`: the end card's dateline and the agent context show it, and `check.sh` matches it. All studio commands run in the studio; `node` below means `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON`.
 
 Subagents you hand work to start fresh. Their prompts carry the clip's key and the identifier rule: identifiers in short form only (4711…0042). Capture and 1:1 check subagents can run at low effort: they run scripts and read what the scripts print.
 
@@ -41,10 +43,10 @@ Subagents you hand work to start fresh. Their prompts carry the clip's key and t
      - `pr.checkout`: the clone, for `stale.sh`;
      - `details`: kind, title, PR title, `url` (the issue, else the PR) and the end-card facts. An open PR gets only the Developer: status and reviewers go stale once the PR moves. A merged one gets Reviewers, Merged, then Release (the first stable tag that has the merge) or else First build (the first tag that has it).
    - It fills only what is missing, so a hand edit survives the next run; delete a field to have it fetched again. Screen and Captured are yours to add at step 5.
-   - Done when `videos/<KEY>/review.md` names the PR, its state, the before commit, the "Captured commit" and the facts.
+   - Write `videos/<KEY>/review.md` yourself, the clip's log from here on (no script makes it). Done when it names the PR, its state, the before commit, the "Captured commit" and the facts.
 2. **Inventory and storyboard, worked out, not asked.** Every state, scenario, interaction and transition the PR built: the rules in `references/inventory.md` decide the rows, which ones go in, still or recording, and the beats.
    - Hand the reading to one subagent: the diff, the PR description, the issue, the designs and the PR's screenshots go in; it applies `inventory.md` and returns only the table and the beat list.
-   - Done when `review.md` § v1 holds the table and the beat list, and `node scripts/frames.ts` of a draft props.json stays within 60 s.
+   - Done when `review.md` § v1 holds the table and the beat list, and `node scripts/frames.ts videos/<KEY>/props.json` of a draft stays within 60 s. A draft has no media yet: give each capture a placeholder `file` with the size it will have (1206×2622 for an iPhone 17 Pro, 2700×1520 for a 1350×760@2 page) and, for a recording, a `trimAfter` of its expected length in frames. `props.ts` measures the real ones at step 5.
    - Ask the user only when a rule can't decide (`inventory.md` § Ask the user only when).
    - The table also feeds the agent context: each kept row's render branch, files (repo-relative, no line numbers), i18n keys and reach go into `state` on its pair or capture; each out row goes into `notShown` with its reason; the design link you compared against goes into `figma`.
 3. **Worktrees and gates**: `references/worktrees.md`. Done when the dependency gate (and, for an app, the native gate) passed in a throwaway worktree. The user's checkout never moves.

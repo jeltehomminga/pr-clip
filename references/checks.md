@@ -30,7 +30,7 @@ Crop or re-shoot anything that is not the product: a watermark, status-bar clutt
 | duration | the master's frame count is the timeline's total ± 1 |
 | format | 1920×1080, `30/1`, `bt709/bt709/bt709`, on the master and the share copy |
 | tail | the share copy's audio ends no later than its video |
-| context | the share copy's comment tag parses as JSON, names this clip's `issueKey`, and is plain ASCII |
+| context | the share copy's comment tag parses as JSON, names this clip's `issueKey` (the clip's key, `shop-42`), and is plain ASCII |
 | size | the share copy is at most 5 MB (more with `maxSeconds`) |
 | gif | the GIF is at most 2.5 MB |
 | fit | 0 `FIT:` lines in `out/render.log` |

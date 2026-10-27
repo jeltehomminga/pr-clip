@@ -246,7 +246,7 @@ Why: driving 10 known takes turn by turn took 93 agent turns and 18.5 min, of wh
 
 **Entries:**
 
-- **An argent e2e YAML** (`*.yaml`) taps by text, and can `scroll-to`, `await` a toast `hidden`, and `await: { idle: true }`. Use it for menus, language and anything with a label: it replays on the other platform where the labels match. Syntax: argent's e2e YAML reference, in its bundled skills. Take the labels from the app's translation files, not from memory.
+- **An argent e2e YAML** (`*.yaml`) taps by text, and can `scroll-to`, `await` a toast `hidden`, and `await: { idle: true }`. Use it for menus, language and anything with a label: it replays on the other platform where the labels match. Syntax: argent's e2e YAML reference, `"$(npm root -g)/@swmansion/argent/skills/argent-create-e2e/references/e2e-yaml.md"`. Take the labels from the app's translation files, not from memory.
 
   ```yaml
   executionPrerequisite: start screen, default language
