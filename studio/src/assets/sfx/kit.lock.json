@@ -1,0 +1,131 @@
+{
+ "kit": 1,
+ "earshot": "0.4.0",
+ "bank": "forge_v2r6+forge04r1+fit1+pluck1",
+ "sr": 48000,
+ "name": "pr-clip",
+ "roles": {
+  "tick": {
+   "sound": "fit/tick/domino",
+   "align": "onset",
+   "level_db": 0.0,
+   "max_s": null,
+   "takes": [
+    {
+     "file": "tick_1.wav",
+     "seed": 0,
+     "pitch": null,
+     "onset_s": 0.0042,
+     "peak_s": 0.0075,
+     "end_s": 0.077,
+     "dur_s": 0.139,
+     "peak_db": -0.91,
+     "lufs_m_max": -26.84,
+     "sha1": "501ff96a5679fce1929895d917270a4fc40dbe16",
+     "key": "cd3fe3877bfcfe663db45b471777a653154a1a08",
+     "checks": []
+    },
+    {
+     "file": "tick_2.wav",
+     "seed": 1,
+     "pitch": null,
+     "onset_s": 0.0045,
+     "peak_s": 0.0075,
+     "end_s": 0.078,
+     "dur_s": 0.139,
+     "peak_db": -0.91,
+     "lufs_m_max": -26.88,
+     "sha1": "51027d864cb503c68982877274cc19fdff365c4c",
+     "key": "cd4e8ecbbf924f0b77b94975be5afbd0313353bf",
+     "checks": []
+    },
+    {
+     "file": "tick_3.wav",
+     "seed": 2,
+     "pitch": null,
+     "onset_s": 0.0042,
+     "peak_s": 0.0075,
+     "end_s": 0.077,
+     "dur_s": 0.139,
+     "peak_db": -0.91,
+     "lufs_m_max": -26.8,
+     "sha1": "e5beddd8c684329cba3d1a4ac92c42295f35e88f",
+     "key": "39aa5efeb9506ce785b7ae92654e413421c663f3",
+     "checks": []
+    }
+   ]
+  },
+  "whoosh.short": {
+   "sound": "fit/whoosh.short/bamboo_swish",
+   "align": "peak",
+   "level_db": 0.0,
+   "max_s": null,
+   "takes": [
+    {
+     "file": "whoosh-short_1.wav",
+     "seed": 0,
+     "pitch": null,
+     "onset_s": 0.087,
+     "peak_s": 0.1295,
+     "end_s": 0.39,
+     "dur_s": 0.477,
+     "peak_db": -13.59,
+     "lufs_m_max": -26.77,
+     "sha1": "ca83b2f8523900d15d1b6a7b13b1b963d620f80b",
+     "key": "baa8d89cf034730385972311d0654a18a308a68a",
+     "checks": []
+    },
+    {
+     "file": "whoosh-short_2.wav",
+     "seed": 1,
+     "pitch": null,
+     "onset_s": 0.089,
+     "peak_s": 0.1295,
+     "end_s": 0.394,
+     "dur_s": 0.477,
+     "peak_db": -13.59,
+     "lufs_m_max": -25.96,
+     "sha1": "41a8845832e37740fabff060e7241baf38063647",
+     "key": "2a2477744d4cf199548446ff1943d1d79f64b658",
+     "checks": []
+    },
+    {
+     "file": "whoosh-short_3.wav",
+     "seed": 2,
+     "pitch": null,
+     "onset_s": 0.0888,
+     "peak_s": 0.1295,
+     "end_s": 0.393,
+     "dur_s": 0.477,
+     "peak_db": -13.59,
+     "lufs_m_max": -26.08,
+     "sha1": "28ef5e56faee10b3ff8f412837367e30538f948f",
+     "key": "4da719166d7941f9849c9962e6d5957bdba503bf",
+     "checks": []
+    }
+   ]
+  },
+  "snap": {
+   "sound": "fit/snap/switch_flip",
+   "align": "onset",
+   "level_db": 0.0,
+   "max_s": null,
+   "takes": [
+    {
+     "file": "snap_1.wav",
+     "seed": 0,
+     "pitch": null,
+     "onset_s": 0.0008,
+     "peak_s": 0.0355,
+     "end_s": 0.107,
+     "dur_s": 0.185,
+     "peak_db": -2.48,
+     "lufs_m_max": -23.79,
+     "sha1": "4465bcea1247584f8fe06eb0932105b9bce473d8",
+     "key": "c36f479fd156b246b0ec36eac3a37efd9c377f3e",
+     "checks": []
+    }
+   ]
+  }
+ }
+}

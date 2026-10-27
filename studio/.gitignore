@@ -1,0 +1,7 @@
+node_modules/
+.remotion/
+out/
+videos/*
+!videos/EXAMPLE/
+.claude/
+clip.log

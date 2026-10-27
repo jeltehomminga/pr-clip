@@ -1,0 +1,7 @@
+{
+  "about": "What must never leave in full. scripts/context.ts (the mp4's agent context), scripts/idscan.sh (app captures) and the web prep scripts (blur on screen) all read this list. Add your own: customer numbers, IBANs, phone numbers. Write identifiers in notes and props in short form only: 4711…0042.",
+  "patterns": [
+    { "kind": "an email address", "regex": "[\\w.+-]+@[\\w-]+\\.[\\w.-]+" },
+    { "kind": "a long number", "regex": "\\b\\d{9,}\\b" }
+  ]
+}

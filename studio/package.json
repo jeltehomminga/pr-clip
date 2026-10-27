@@ -1,0 +1,22 @@
+{
+  "name": "pr-clip-studio",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/pr-clip/timeline.check.ts && tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.520",
+    "@remotion/fonts": "4.0.520",
+    "qrcode-generator": "2.0.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.520"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.2.0",
+    "jsqr": "1.4.0",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "issueKey": "EXAMPLE-1",
+  "why": "Synthetic example: a grey card turns green",
+  "platform": "app",
+  "pairs": [
+    {
+      "before": {
+        "file": "01-before.png",
+        "width": 1206,
+        "height": 2622,
+        "rings": [{ "left": 66, "top": 640, "width": 1074, "height": 300 }]
+      },
+      "after": {
+        "file": "01-after.png",
+        "width": 1206,
+        "height": 2622,
+        "rings": [{ "left": 66, "top": 640, "width": 1074, "height": 300 }]
+      },
+      "caption": "The grey card is green after the fix"
+    },
+    {
+      "before": {
+        "file": "02-before.mp4",
+        "width": 1206,
+        "height": 2622,
+        "trimBefore": 0,
+        "trimAfter": 90
+      },
+      "after": {
+        "file": "02-after.mp4",
+        "width": 1206,
+        "height": 2622,
+        "trimBefore": 0,
+        "trimAfter": 90,
+        "rings": [{ "left": 66, "top": 640, "width": 1074, "height": 300 }]
+      },
+      "caption": "The green card slides down into place"
+    }
+  ]
+}
