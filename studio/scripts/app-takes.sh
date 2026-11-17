@@ -89,7 +89,8 @@ aim() { # aim <take json> : every `aim` point lies inside its labelled element r
   while IFS= read -r a; do
     [ -n "$a" ] || continue
     label=$(jq -r .label <<<"$a")
-    frame=$(grep -F "\"$label\"" <<<"$text" | head -1 | sed -E 's/.*\(([0-9.]+), ([0-9.]+), ([0-9.]+), ([0-9.]+)\) *$/\1 \2 \3 \4/')
+    # argent 0.33 prints the frame as (x,y,w,h), older versions with a space after each comma
+    frame=$(grep -F "\"$label\"" <<<"$text" | head -1 | sed -E 's/.*\(([0-9.]+), *([0-9.]+), *([0-9.]+), *([0-9.]+)\) *$/\1 \2 \3 \4/')
     awk -v x="$(jq -r .x <<<"$a")" -v y="$(jq -r .y <<<"$a")" -v f="$frame" -v l="$label" 'BEGIN {
       n = split(f, b, " "); ok = n == 4 && x >= b[1] && x <= b[1] + b[3] && y >= b[2] && y <= b[2] + b[4]
       print "aim " (ok ? "ok" : "FAIL") ": \"" l "\" at " x "," y ", element " (n == 4 ? f : "not on screen"); exit !ok }' || return 1
