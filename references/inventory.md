@@ -104,7 +104,7 @@ It prints `total posterFrame motionFrame`. `total` / 30 is the length in seconds
 The studio enforces these rules. Plan the inventory with them in mind.
 
 - **Result first.** The after state and the why are on screen within 3 s. A recorded before pushes that later; that is accepted for a transition, because the transition is the point.
-- **Corner brackets**, never a closed ring: a ring reads as a UI border. Orange marks the problem, green the fix (`ring` in `src/brand.ts`). They sit 10 px clear of the element.
+- **Corner brackets**, never a closed ring: a ring reads as a UI border. Coral marks the problem, teal the fix (`ring` in `src/brand.ts`). They sit 10 px clear of the element.
 - **One lean-in per pair**, onto its first after bracket, only once the after state has landed (never during the swap), in 1 s moves.
   - Web: zoom to fit, so the change fills about 70 % of the window (1.25–1.8×), with a camera pan.
   - App: one camera on the whole pair. Both phones scale around the midpoint of their fixes, so they move apart and never overlap. Full-width cards stay near 1.25×; a small target (a tab-bar icon) reaches 1.8×.
