@@ -1,5 +1,5 @@
 // Webpack bundles these as asset/resource: the default export is the file's URL.
-declare module "*.ttf" {
+declare module "*.woff2" {
   const url: string
   export default url
 }

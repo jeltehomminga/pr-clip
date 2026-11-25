@@ -19,7 +19,7 @@ Written for macOS and Claude Code. Needs Node 24+, ffmpeg, jq, bc, the `gh` CLI 
 
 - This skill and studio: MIT (`LICENSE`).
 - Remotion (the renderer, an npm dependency) has its own licence: free for individuals and companies of up to 3 people; a bigger company needs a Remotion company licence. Read remotion.dev/license before you use it at work.
-- Work Sans: SIL Open Font License (`studio/src/assets/OFL.txt`).
+- Schibsted Grotesk: SIL Open Font License, © The Schibsted Grotesk Project Authors (`studio/src/assets/OFL.txt`).
 - UI sounds: rendered with earshot (MIT) from CC0 recordings (`studio/src/assets/sfx/CREDITS.md`).
 - Voice: Kokoro-82M and kokoro-onnx (Apache-2.0 / MIT), downloaded by `studio/scripts/setup-tts.sh`.
 - argent (app capture, installed separately): Apache-2.0 source with some proprietary binaries. simslim: MIT.

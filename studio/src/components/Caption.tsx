@@ -6,7 +6,7 @@ import type { Cue } from "../pr-clip/timeline"
 import { useTone } from "./Stage"
 
 const lineHeight = Math.round(type.caption * 1.2)
-/** About 42 characters of Work Sans 600 at caption size. */
+/** About 42 characters of Schibsted Grotesk 600 at caption size. */
 const width = 1300
 
 /** A column beside the devices instead of the band below them (films). */

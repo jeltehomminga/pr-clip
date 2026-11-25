@@ -28,7 +28,7 @@ const path = require("path")
 const { execFileSync, spawnSync } = require("child_process")
 
 const studio = path.join(__dirname, "..")
-const font = path.join(studio, "src/assets/WorkSans-Bold.ttf")
+const font = path.join(studio, "src/assets/SchibstedGrotesk-SemiBold.ttf")
 const screenShare = 0.0005 // of the whole frame: catches a typed letter's neighbourhood, not h264 noise
 const probeShare = 0.003 // of a probe region: a touch dot's fade stays under it
 

@@ -8,7 +8,7 @@ A Remotion 4.0.520 studio for before/after clips of pull requests. The `pr-clip`
 - `npm run studio` previews EXAMPLE. `scripts/clip.sh <KEY>` (props, test, render, a still per beat, check, sheet) must exit 0, and every `check.sh` row must pass.
 - Every `@remotion/*` package is pinned at 4.0.520. Read the Remotion licence before you upgrade, and before a company of more than 3 people uses this (remotion.dev/license).
 - Every frame is a pure function of `useCurrentFrame()`: no CSS transitions or animations, timers, `Date` or `Math.random`; noise only with a fixed seed. `check.sh` renders one mid-motion frame twice and compares the md5.
-- Colours only from `src/brand.ts`, the one file to swap for your brand. Easing and springs only from `brand.motion` / `brand.spring`. Work Sans (OFL) is the only font.
+- Colours only from `src/brand.ts`, the one file to swap for your brand. Easing and springs only from `brand.motion` / `brand.spring`. Schibsted Grotesk (OFL) is the only font.
 - `identifiers.json` lists what must never leave in full (emails, long numbers; add your own). The agent context, the app identifier scan and the web prep scripts all read it. Write identifiers in notes and props in short form only: 4711…0042.
 
 ## Look

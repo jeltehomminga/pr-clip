@@ -48,7 +48,7 @@ export const ring = {
 } as const
 
 export const type = {
-  family: "Work Sans",
+  family: "Schibsted Grotesk",
   tracking: "-0.02em",
   weights: { regular: 400, semiBold: 600, bold: 700, extraBold: 800 },
   /** Burned-in caption font size in px: the minimum, never smaller. */
