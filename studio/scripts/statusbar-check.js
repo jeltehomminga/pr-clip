@@ -2,7 +2,8 @@
 // Status bar gate: does a capture's status bar show only what the clean demo bar shows?
 //
 //   node scripts/statusbar-check.js <file.png|file.mp4> [...]      exit 0 = every bar clean, 1 = not
-//   node scripts/statusbar-check.js --save-ref <clean file>         keep its bar as the reference
+//   node scripts/statusbar-check.js --save-ref <clean file> [name]  keep its bar as the reference
+//                                                                   (with a name: one more, <w>x<h>-<name>.png)
 //
 // Once, all 10 files of a clip carried a Safety Center shield and a "!" on the wifi icon,
 // found only by the 1:1 check after every take, and the re-shoot cost ~33 min. This compares the
@@ -20,6 +21,9 @@
 //
 // References live in scripts/statusbar/<w>x<h>.png, one per capture size, with the rows and
 // skipped columns below. A new device size needs a geometry entry and --save-ref of a clean file.
+// A new OS version on the same size draws other glyphs (iOS 27's signal and wifi icons fail the
+// iOS 26 reference by ~450 px on a clean bar): add `--save-ref <clean file> <name>`, which keeps
+// <w>x<h>-<name>.png next to the first. A bar passes when it matches any reference of its size.
 
 const fs = require("fs")
 const path = require("path")
@@ -83,33 +87,40 @@ const setup = (file) => {
   return { s, g: geometry[s], width: Number(s.split("x")[0]) }
 }
 
+// Every reference of a size: <w>x<h>.png and any <w>x<h>-<name>.png (another OS version).
+const refsFor = (s) =>
+  fs.existsSync(refDir) ? fs.readdirSync(refDir).filter((f) => f === `${s}.png` || (f.startsWith(`${s}-`) && f.endsWith(".png"))).map((f) => path.join(refDir, f)) : []
+
 const args = process.argv.slice(2)
 if (args[0] === "--save-ref") {
   const { s, g, width } = setup(args[1])
   if (!g) throw new Error(`no geometry for ${s}: add one to scripts/statusbar-check.js`)
-  const out = path.join(refDir, `${s}.png`)
+  const out = path.join(refDir, args[2] ? `${s}-${args[2]}.png` : `${s}.png`)
   fs.mkdirSync(refDir, { recursive: true })
   execFileSync("ffmpeg", ["-v", "error", "-y", "-i", args[1], "-frames:v", "1", "-vf", `crop=${width}:${g.h}:0:${g.y}`, out])
   console.log(`reference ${out}`)
   process.exit(0)
 }
 if (!args.length) {
-  console.error("usage: statusbar-check.js <file.png|file.mp4> [...] | --save-ref <clean file>")
+  console.error("usage: statusbar-check.js <file.png|file.mp4> [...] | --save-ref <clean file> [name]")
   process.exit(2)
 }
 
 let failed = 0
 for (const file of args) {
   const { s, g, width } = setup(file)
-  const refFile = path.join(refDir, `${s}.png`)
-  if (!g || !fs.existsSync(refFile)) {
+  const refFiles = g ? refsFor(s) : []
+  if (!g || !refFiles.length) {
     console.log(`${file}: status bar FAIL no ${g ? "reference" : "geometry"} for ${s} (header of this script)`)
     failed++
     continue
   }
-  const ref = mask(execFileSync("ffmpeg", ["-v", "error", "-i", refFile, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]), g, width)
+  const refs = refFiles.map((f) => mask(execFileSync("ffmpeg", ["-v", "error", "-i", f, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]), g, width))
   const frames = file.endsWith(".mp4") ? [["first", false], ["last", true]] : [["still", false]]
-  const diffs = frames.map(([name, last]) => ({ name, ...compare(mask(band(file, g, width, last), g, width), ref) }))
+  // Against the closest reference: the one whose worse count is lowest.
+  const worst = (d) => Math.max(d.extra, d.missing)
+  const closest = (m) => refs.map((ref) => compare(m, ref)).reduce((a, b) => (worst(b) < worst(a) ? b : a))
+  const diffs = frames.map(([name, last]) => ({ name, ...closest(mask(band(file, g, width, last), g, width)) }))
   const bad = diffs.some((d) => d.extra > maxDiff || d.missing > maxDiff)
   if (bad) failed++
   const detail = diffs.map((d) => `${d.name} ${d.extra} px extra, ${d.missing} missing`).join("; ")

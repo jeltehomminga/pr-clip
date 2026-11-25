@@ -85,7 +85,7 @@ adb -s <serial> shell am start -a android.intent.action.VIEW -d "'<same link>'" 
   - `argent e2e run` sets `sysui_demo_allowed` to 0 on exit, so the bar needs setting again after every YAML entry. `app-takes.sh` does that right before each recording or still.
 - By hand, run it again after a reboot.
 
-`node scripts/statusbar-check.js <file.png|file.mp4>` proves the bar on the capture itself. It compares the bar's icons with a clean reference for that capture size (`scripts/statusbar/<w>x<h>.png`); a recording is checked on its first and last frame. On 199 files from 15 app clips it passed every clean bar and failed every bad one. A new device size needs a geometry line in the script and `--save-ref` of a clean file you looked at.
+`node scripts/statusbar-check.js <file.png|file.mp4>` proves the bar on the capture itself. It compares the bar's icons with a clean reference for that capture size (`scripts/statusbar/<w>x<h>.png`); a recording is checked on its first and last frame. On 199 files from 15 app clips it passed every clean bar and failed every bad one. A new device size needs a geometry line in the script and `--save-ref` of a clean file you looked at. A new OS version on a known size draws other glyphs (iOS 27's signal and wifi icons failed the iOS 26 reference by about 450 px on a clean bar): look at a clean bar, then `--save-ref <file> <name>` adds `<w>x<h>-<name>.png`, and a bar passes on any reference of its size.
 
 Why it matters: on one clip, all 10 files carried a Safety Center shield and a "!" on the wifi icon. Only the 1:1 check found them, and the re-shoot cost about 33 min.
 
