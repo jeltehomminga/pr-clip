@@ -1,42 +1,41 @@
 import React, { useLayoutEffect, useRef } from "react"
-import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } from "remotion"
+import { AbsoluteFill, Img, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion"
 
-import { colors, motion, ring } from "../brand"
+import * as brand from "../brand"
 import { BrowserFrame } from "../components/BrowserFrame"
 import { Highlight } from "../components/Highlight"
 import { PhoneFrame } from "../components/PhoneFrame"
-import { useTone } from "../components/Stage"
-import { Body, Rise } from "../components/Text"
+import { Body, Rise, Words } from "../components/Text"
 import { QrCode } from "./QrCode"
 import { crossfade, day, isVideo, type Capture, type Details, type Fact } from "./timeline"
 
-/**
- * The band at the top left, anchored left with a round right end, holding the kind, the key and the
- * title in white.
- */
-const band = { top: 100, height: 280, width: 1140, textLeft: 120, textWidth: 880 } as const
-const titleSize = 58
-/** Two lines at most; the title's line height is 1.06. */
-const titleMax = Math.ceil(titleSize * 1.06 * 2) + 1
-/**
- * The column under the band: the parent issue, the why, the PR and the facts, ending above `bottom`. Beside an
- * app's phone it runs to the band's end; a web window is wider, so there it keeps to the band's text.
- */
-const columnTop = band.top + band.height + 40
-const columnWidth = { app: band.width, web: band.textWidth } as const
-const bottom = 1080 - 100
-/** The hero stands centred right, clear of the bottom strip. */
+const { colors, glass } = brand
+
+/** The type column at the left, centred top to bottom between the margins. Beside an app's phone it can run wider. */
+const left = 120
+const margin = 100
+const columnWidth = { app: 1040, web: 860 } as const
+const titleSize = 60
+/** Two lines at most; the title's line height is 1.08. */
+const titleMax = Math.ceil(titleSize * 1.08 * 2) + 1
+/** The hero floats centred right. */
 const heroRight = 120
-const heroStrip = 110
 const heroPhone = 820
-const heroWeb = 620
-/** The band slides in once the dissolve from the beat before is over: nothing moves under a dissolve. */
-const slideFrames = 12
-/** The band has landed: PrClip's snap plays here. */
-export const bandLands = crossfade + slideFrames
-/** Then one item every 100 ms, the facts grid as one item. */
-const step = 3
-const at = (item: number) => bandLands + item * step
+const heroWeb = 680
+/**
+ * Nothing moves under the dissolve from the beat before. Then, one after another: the dateline,
+ * the title word by word, the parent issue, the why, the PR, the QR and the fact tiles; the hero
+ * floats in beside them.
+ */
+const start = crossfade
+const titleAt = start + 5
+const heroAt = start + 8
+const textAt = titleAt + 10
+const factsAt = titleAt + 20
+/** Between one fact tile and the next. */
+const tileStep = 3
+/** The title's first word has risen: PrClip's snap plays here. */
+export const cardLands = titleAt + 8
 
 type EndCardProps = {
   issueKey: string
@@ -47,66 +46,42 @@ type EndCardProps = {
   hero: Capture
   platform: "app" | "web"
   url?: string
-  /** capture.date, YYYY-MM-DD: the day the footage was taken, in the band's dateline. */
+  /** capture.date, YYYY-MM-DD: the day the footage was taken, in the dateline. */
   captured?: string
   /** The QR of `details.url` before the facts; off with `qr: false` in props.json, or when there is no url. */
   qr: boolean
 }
 
-type TileProps = { fact: Fact; dark: boolean }
-
 /** A fact tile's height: one label line and one value line. Fixed, so the QR beside the grid can match it. */
 const tileHeight = 88
 const tileGap = 16
+const tileGlass = { borderRadius: 18, background: glass.fill, border: `1px solid ${glass.border}`, boxShadow: `inset 0 1px 0 ${glass.sheen}`, boxSizing: "border-box" } as const
 
-/** One fact in its own tile: the label small above, the value on one line. */
-const Tile: React.FC<TileProps> = ({ fact, dark }) => (
-  <div
-    style={{
-      minWidth: 0,
-      padding: "14px 22px 16px",
-      borderRadius: 18,
-      background: dark ? colors.neutral800 : colors.shade0,
-      border: `2px solid ${dark ? colors.neutral700 : colors.neutral200}`,
-    }}
-  >
-    <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: dark ? colors.neutral400 : colors.neutral500 }}>
-      {fact.label}
-    </div>
-    <div
-      data-fact={fact.label}
-      style={{ marginTop: 4, fontSize: 24, lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", color: dark ? colors.neutral50 : colors.neutral900 }}
-    >
+type TileProps = { fact: Fact }
+
+/** One fact on its own glass tile: the label small above, the value on one line. */
+const Tile: React.FC<TileProps> = ({ fact }) => (
+  <div style={{ ...tileGlass, height: tileHeight, minWidth: 0, padding: "15px 22px 0" }}>
+    <div style={{ fontSize: 15, fontWeight: brand.type.weights.medium, letterSpacing: "0.12em", textTransform: "uppercase", color: colors.faint }}>{fact.label}</div>
+    <div data-fact={fact.label} style={{ marginTop: 6, fontSize: 24, lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", color: colors.text }}>
       {fact.value}
     </div>
   </div>
 )
 
-/** The QR tile is as wide as two fact rows are tall, and as tall as the whole grid. */
+/** The QR tile is as wide as two fact rows are tall. */
 const qrSide = 2 * tileHeight + tileGap
+/** The light panel the QR sits on, inset in its glass tile. */
+const qrInset = 6
 
 type QrTileProps = { url: string; height: number }
 
-/**
- * The QR on a white tile like the facts', its edges on the grid's. No key under it: the band shows it.
- * White in both tones: a QR needs a light ground.
- */
+/** The QR on a light panel inside a glass tile like the facts', its edges on the grid's. No key under it: the dateline shows it. */
 const QrTile: React.FC<QrTileProps> = ({ url, height }) => (
-  <div
-    data-qr={url}
-    style={{
-      width: qrSide,
-      height,
-      flexShrink: 0,
-      boxSizing: "border-box",
-      display: "flex",
-      alignItems: "center",
-      borderRadius: 18,
-      background: colors.shade0,
-      border: `2px solid ${colors.neutral200}`,
-    }}
-  >
-    <QrCode text={url} size={qrSide - 4} color={colors.primary700} />
+  <div data-qr={url} style={{ ...tileGlass, width: qrSide, height, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ borderRadius: 12, background: brand.qr.panel, overflow: "hidden" }}>
+      <QrCode text={url} size={qrSide - 2 * qrInset} color={brand.qr.ink} />
+    </div>
   </div>
 )
 
@@ -116,7 +91,7 @@ type HeroProps = { capture: Capture; platform: "app" | "web"; url?: string }
 const Hero: React.FC<HeroProps> = ({ capture, platform, url }) => {
   const file = isVideo(capture) ? capture.file.replace(/\.[^.]+$/, "-last.png") : capture.file
   const overlay = capture.rings?.map((r) => (
-    <Highlight key={`${r.left}-${r.top}-${r.width}-${r.height}`} rect={r} color={ring.fix} delay={at(2)} />
+    <Highlight key={`${r.left}-${r.top}-${r.width}-${r.height}`} rect={r} kind="fix" delay={heroAt + 16} />
   ))
   const image = <Img src={staticFile(file)} style={{ width: "100%" }} />
 
@@ -136,21 +111,43 @@ const Hero: React.FC<HeroProps> = ({ capture, platform, url }) => {
 }
 
 /**
- * The last beat when a clip has details. The band holds what changed: kind and key, the title. Under
- * it: the parent issue, the clip's why, the PR and the facts as tiles, opened by the QR of
- * `details.url`; on the right the after state with its brackets. Facts come from what
- * exists when the clip is made: before review and merge there are fewer, and the tiles close up. A
- * title over two lines, a fact wider than its tile, or a column past the bottom margin logs `FIT:`
- * and fails check.sh.
+ * The hero floats in from the right, turned toward the text, and settles at a slight angle; from
+ * there it drifts slowly (a few px a second and a degree of swing), against the still type column.
+ */
+const useFloat = (): React.CSSProperties => {
+  const frame = useCurrentFrame()
+  const { fps } = useVideoConfig()
+  const p = spring({ frame: frame - heroAt, fps, config: brand.spring, durationInFrames: 40 })
+  const s = Math.max(0, frame - heroAt) / fps
+  const x = (1 - p) * 90 - s * 4
+  const y = (1 - p) * 50 + Math.sin(s * 1.1) * 5
+  const turn = -9 - (1 - p) * 14 + Math.sin(s * 0.7) * 1.2
+  const lean = 3 + (1 - p) * 6
+  return {
+    opacity: Math.min(1, Math.max(0, p * 1.6)),
+    transform: `perspective(2000px) translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotateY(${turn.toFixed(3)}deg) rotateX(${lean.toFixed(3)}deg) scale(${(0.9 + 0.1 * p).toFixed(4)})`,
+  }
+}
+
+/** The dateline's teal dot: it pops in on the spring, with a soft glow. */
+const Dot: React.FC = () => {
+  const frame = useCurrentFrame()
+  const { fps } = useVideoConfig()
+  const p = spring({ frame: frame - start, fps, config: brand.spring })
+  return <div style={{ width: 10, height: 10, flexShrink: 0, borderRadius: 999, background: brand.ring.fix, boxShadow: `0 0 14px ${brand.ring.fix}`, transform: `scale(${p.toFixed(3)})` }} />
+}
+
+/**
+ * The last beat when a clip has details, set on type: a column at the left, centred top to bottom,
+ * with the dateline (kind · key · milestone · capture day), the title rising word by word out of a
+ * mask, the parent issue, the clip's why, the PR, and the facts as glass tiles opened by the QR of
+ * `details.url`, each coming in after the one before. On the right the after state floats with its
+ * brackets. Facts come from what exists when the clip is made: before review and merge there are
+ * fewer, and the tiles close up. A dateline wider than the column, a title over two lines, a
+ * column taller than the space between the margins, or a fact wider than its tile logs `FIT:` and
+ * fails check.sh.
  */
 export const EndCard: React.FC<EndCardProps> = ({ issueKey, why, prNumber, details, hero, platform, url, captured, qr }) => {
-  const frame = useCurrentFrame()
-  const dark = useTone() === "dark"
-  const slide = interpolate(frame, [crossfade, crossfade + slideFrames], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.bezier(...motion.move.curve),
-  })
   const kicker = useRef<HTMLDivElement>(null)
   const title = useRef<HTMLDivElement>(null)
   const column = useRef<HTMLDivElement>(null)
@@ -160,8 +157,9 @@ export const EndCard: React.FC<EndCardProps> = ({ issueKey, why, prNumber, detai
   const rows = Math.max(showQr ? 2 : 1, Math.ceil(details.facts.length / 2))
   // The dateline holds only what stays true once posted: the sprint, if any, and the day of the capture.
   const dateline = [details.kind, issueKey, details.sprint, captured && day(captured)].filter(Boolean).join(" · ")
+  const room = 1080 - 2 * margin
 
-  // offsetHeight and offsetTop are layout sizes, so the Rise transforms don't skew them.
+  // offsetHeight is a layout size, so the entrances' transforms don't skew it.
   useLayoutEffect(() => {
     const k = kicker.current
     const t = title.current
@@ -170,67 +168,53 @@ export const EndCard: React.FC<EndCardProps> = ({ issueKey, why, prNumber, detai
     if (t && t.offsetHeight > titleMax) {
       console.error(`FIT: end card title needs ${t.offsetHeight} px of ${titleMax} (two lines): "${details.title}"`)
     }
-    if (c && c.offsetTop + c.offsetHeight > bottom) {
-      console.error(`FIT: end card ends at ${c.offsetTop + c.offsetHeight} px, past ${bottom}`)
-    }
+    if (c && c.offsetHeight > room) console.error(`FIT: end card column needs ${c.offsetHeight} px of ${room}`)
     c?.querySelectorAll<HTMLElement>("[data-fact]").forEach((v) => {
       if (v.scrollWidth > v.clientWidth) console.error(`FIT: fact "${v.dataset.fact}" needs ${v.scrollWidth} px of ${v.clientWidth}`)
     })
-  }, [details.title, dateline])
+  }, [details.title, dateline, room])
 
   return (
     <AbsoluteFill>
-      <div
-        style={{
-          position: "absolute",
-          left: -band.width * (1 - slide),
-          top: band.top,
-          width: band.width,
-          height: band.height,
-          borderRadius: `0 ${band.height / 2}px ${band.height / 2}px 0`,
-          background: colors.primary500,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: band.textLeft,
-          top: band.top,
-          width: band.textWidth,
-          height: band.height,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: 14,
-          color: colors.shade0,
-        }}
-      >
-        <Rise delay={at(0)}>
-          <div ref={kicker} style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase", opacity: 0.85, whiteSpace: "nowrap", overflow: "hidden" }}>
-            {dateline}
+      <div style={{ position: "absolute", left, top: margin, width: columnWidth[platform], height: room, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <div ref={column}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <Dot />
+            <div ref={kicker} style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+              <Rise delay={start + 2}>
+                <div style={{ fontSize: 20, fontWeight: brand.type.weights.medium, letterSpacing: "0.16em", textTransform: "uppercase", color: colors.muted, whiteSpace: "nowrap" }}>{dateline}</div>
+              </Rise>
+            </div>
           </div>
-        </Rise>
-        <Rise delay={at(1)}>
-          <div ref={title} style={{ fontSize: titleSize, fontWeight: 800, lineHeight: 1.06 }}>
-            {details.title}
+          <div
+            ref={title}
+            style={{ marginTop: 22, fontSize: titleSize, fontWeight: brand.type.weights.bold, lineHeight: 1.08, letterSpacing: "-0.03em", color: colors.text, textWrap: "balance" }}
+          >
+            <Words text={details.title} at={titleAt} mask />
           </div>
-        </Rise>
-      </div>
-      <div ref={column} style={{ position: "absolute", left: band.textLeft, top: columnTop, width: columnWidth[platform], display: "flex", flexDirection: "column", gap: 14 }}>
-        {!!details.parent && (
-          <Rise delay={at(2)}>
-            <Body size={24}>{details.parent}</Body>
-          </Rise>
-        )}
-        <Rise delay={at(3)}>
-          <Body size={32}>{why}</Body>
-        </Rise>
-        <Rise delay={at(4)}>
-          <Body size={22}>{pr}</Body>
-        </Rise>
-        <Rise delay={at(5)} style={{ marginTop: 20 }}>
-          <div style={{ display: "flex", gap: tileGap }}>
-            {showQr && <QrTile url={details.url!} height={rows * tileHeight + (rows - 1) * tileGap} />}
+          <div style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 12 }}>
+            {!!details.parent && (
+              <Rise delay={textAt}>
+                <Body size={22} color={colors.faint}>
+                  {details.parent}
+                </Body>
+              </Rise>
+            )}
+            <Rise delay={textAt + 3}>
+              <Body size={30}>{why}</Body>
+            </Rise>
+            <Rise delay={textAt + 6}>
+              <Body size={22} color={colors.faint}>
+                {pr}
+              </Body>
+            </Rise>
+          </div>
+          <div style={{ marginTop: 34, display: "flex", gap: tileGap }}>
+            {showQr && (
+              <Rise delay={factsAt}>
+                <QrTile url={details.url!} height={rows * tileHeight + (rows - 1) * tileGap} />
+              </Rise>
+            )}
             <div
               style={{
                 flex: 1,
@@ -242,17 +226,19 @@ export const EndCard: React.FC<EndCardProps> = ({ issueKey, why, prNumber, detai
                 gap: tileGap,
               }}
             >
-              {details.facts.map((f) => (
-                <Tile key={f.label} fact={f} dark={dark} />
+              {details.facts.map((f, i) => (
+                <Rise key={f.label} delay={factsAt + (i + 1) * tileStep} style={{ minWidth: 0 }}>
+                  <Tile fact={f} />
+                </Rise>
               ))}
             </div>
           </div>
-        </Rise>
+        </div>
       </div>
-      <div style={{ position: "absolute", right: heroRight, top: 0, bottom: heroStrip, display: "flex", alignItems: "center" }}>
-        <Rise delay={at(1)}>
+      <div style={{ position: "absolute", right: heroRight, top: 0, bottom: 0, display: "flex", alignItems: "center" }}>
+        <div style={useFloat()}>
           <Hero capture={hero} platform={platform} url={url} />
-        </Rise>
+        </div>
       </div>
     </AbsoluteFill>
   )

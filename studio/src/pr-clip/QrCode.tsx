@@ -16,9 +16,9 @@ type QrCodeProps = { text: string; size: number; color: string }
 
 /**
  * A QR code that reads as part of the card, not a black box: round dots, the three
- * finder eyes and the alignment pattern as rounded squares, all in one green on white, no logo in the middle (the clip has one logo,
- * in its corner). Error level L: a screen doesn't get scratched, and a short issue URL then fits version 3
- * (29 modules), so the dots stay as big in the 192 px tile as they were at M in 220 px. `size` includes the
+ * finder eyes and the alignment pattern as rounded squares, all in one dark ink on a light panel, no logo in
+ * the middle. Error level L: a screen doesn't get scratched, and a short issue URL then fits version 3
+ * (29 modules), so the dots stay big in the end card's 180 px panel. `size` includes the
  * quiet zone. check.sh decodes it from the share copy, so a look that breaks scanning fails a row.
  */
 export const QrCode: React.FC<QrCodeProps> = ({ text, size, color }) => {

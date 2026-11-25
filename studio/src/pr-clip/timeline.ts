@@ -1,3 +1,5 @@
+import { motion } from "../brand.ts"
+
 export type Rect = { left: number; top: number; width: number; height: number }
 export type Ring = Rect & { delay?: number }
 /**
@@ -62,7 +64,7 @@ export type Details = {
   parent?: string
   /** The PR title. */
   prTitle: string
-  /** A sprint or milestone that held the capture day: "Sprint 2". In the band's dateline. */
+  /** A sprint or milestone that held the capture day: "Sprint 2". In the end card's dateline. */
   sprint?: string
   /** What the QR opens: the issue, or else the PR. */
   url?: string
@@ -101,7 +103,6 @@ export type PrClipProps = {
   pairs: Pair[]
   /** App: dark mode and another language. Web: another language, tablet and mobile. Shown after the pairs, before the outro. */
   variants?: VariantGroup[]
-  stage?: "light" | "dark"
   url?: string
   outro?: string
   /** Turns the outro into the details end card. */
@@ -224,10 +225,13 @@ export const fadeTop = 870
  */
 // ponytail: mirrors the row's CSS in AppPair/WebWipe/Variants; recompute if the chip or padding changes.
 export const frameTop = 114
-/** Brackets sit 10 px clear of their rect and are 4 px thick (Highlight). */
+/** Brackets sit 10 px clear of their rect and are at most 4 px thick (Highlight draws 3). */
 export const bracketReach = 14
 /** Two caption lines of 42 characters. */
 const maxChars = 84
+
+/** Frames from a caption's start until its last word has landed (Caption: each word on the brand spring, motion.words.stagger apart). */
+const captionLands = (text: string) => 18 + Math.ceil((text.split(" ").length - 1) * motion.words.stagger)
 
 /** Reading time: 0.6 s plus 15 characters a second. */
 export const read = (text: string) => Math.ceil((0.6 + text.length / 15) * fps)
@@ -541,7 +545,7 @@ export function timeline(props: PrClipProps): Timeline {
     // Under the pair's own caption rather than the why; a recording has played to its end state.
     const settledAt = Math.max(
       afterRingsAt + (ring?.delay ?? 0) + 25,
-      captionAt + 15,
+      captionAt + captionLands(pair.caption),
       (zoomAt ?? 0) + cameraFrames,
       (afterPlayAt ?? playAt) + played(pair.after),
     )
@@ -564,7 +568,8 @@ export function timeline(props: PrClipProps): Timeline {
     const longest = Math.max(...group.captures.map(played))
     const duration = Math.max(minVariants, say(`variants-${index + 1}`, group.caption) + gap, longest ? lead + longest + tail : 0)
     const tall = !web && group.captures.every((c) => bracketsClearFade(c, false, tallScreen))
-    variantBeats.push({ kind: "variants", index, from: cursor, duration, ringsAt: lead, tall, settledAt: lead + Math.max(25, longest) })
+    const settledAt = Math.max(lead + Math.max(25, longest), captionLands(group.caption))
+    variantBeats.push({ kind: "variants", index, from: cursor, duration, ringsAt: lead, tall, settledAt })
     cursor += duration
   })
 

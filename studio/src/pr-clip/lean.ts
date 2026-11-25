@@ -16,6 +16,19 @@ export const lean = (frame: number, { zoomAt, zoomOutAt }: PairBeat) =>
       })
 
 /**
+ * The camera's feel while it moves: a slight perspective tilt (forward on the way in, back on the
+ * way out) and a short blur, both from the lean's speed, so they peak mid-move and are gone at rest.
+ */
+export const leanFeel = (frame: number, beat: PairBeat): React.CSSProperties => {
+  const speed = (lean(frame + 1, beat) - lean(frame - 1, beat)) / 2
+  if (Math.abs(speed) < 0.004) return {}
+  return {
+    transform: `perspective(2400px) rotateX(${(-speed * 30).toFixed(3)}deg)`,
+    filter: `blur(${Math.min(1, Math.abs(speed) * 14).toFixed(2)}px)`,
+  }
+}
+
+/**
  * While leaned in, the footage fades out above the caption band, so the caption never
  * sits over it and the band itself stays still. At rest there is no mask at all.
  */

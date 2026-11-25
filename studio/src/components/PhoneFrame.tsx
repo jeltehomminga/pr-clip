@@ -3,7 +3,6 @@ import React from "react"
 import * as brand from "../brand"
 import type { Capture, Rect } from "../pr-clip/timeline"
 import { FrameProvider } from "./FrameContext"
-import { frameShadow, useTone } from "./Stage"
 
 type PhoneFrameProps = {
   /** The capture being shown - its measured source size, from props.json. */
@@ -37,8 +36,9 @@ type PhoneFrameProps = {
 
 /**
  * Simulator captures are raw rectangles with no device chrome, so the bezel,
- * corner radius and shadow are drawn here. The corner radius follows the
- * capture width (186px on a 1206-wide iPhone 17 Pro capture).
+ * corner radius and shadow are drawn here: a frosted glass bezel with a light rim and a
+ * lit top edge, a dark hairline round the screen, and a deep soft shadow. The corner radius
+ * follows the capture width (186px on a 1206-wide iPhone 17 Pro capture).
  */
 export const PhoneFrame: React.FC<PhoneFrameProps> = ({
   source,
@@ -49,13 +49,12 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
   zoom,
   children,
 }) => {
-  const tone = useTone()
   const visibleSourceHeight = source.height - cropBottom
   const scale = screenHeight / visibleSourceHeight
   const screenWidth = source.width * scale
   const radius = source.width * 0.154 * scale
   const bezel = Math.max(6, 26 * scale)
-  const geometry = { source, cropBottom, screenHeight }
+  const geometry = { source, cropBottom, screenHeight, dark }
   // Origin is the rect's centre, unclamped: timeline() skips the lean-in when a bracket
   // would reach the caption fade.
   const lean = zoom && {
@@ -69,8 +68,8 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
         position: "relative",
         padding: bezel,
         borderRadius: radius + bezel,
-        background: brand.colors.neutral900,
-        boxShadow: `${frameShadow[tone]}, 0 0 0 1px ${brand.colors.neutral700}77, inset 0 0 0 1px ${brand.colors.neutral700}55`,
+        background: brand.glass.fill,
+        boxShadow: `${brand.glass.shadow}, 0 0 0 1px ${brand.glass.border}, inset 0 1px 0 ${brand.glass.sheen}`,
         ...lean,
       }}
     >
@@ -81,7 +80,8 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
           borderRadius: radius,
           overflow: "hidden",
           position: "relative",
-          backgroundColor: dark ? brand.colors.darkNeutral50 : brand.colors.neutral50,
+          backgroundColor: dark ? brand.colors.pageDark : brand.colors.pageLight,
+          boxShadow: `0 0 0 1px ${brand.glass.edge}`,
         }}
       >
         <div

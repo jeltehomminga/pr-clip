@@ -6,6 +6,8 @@ export type FrameGeometry = {
   source: Pick<Capture, "width" | "height">
   cropBottom: number
   screenHeight: number
+  /** The capture is in dark mode: brackets over it take the bright shades (brand.ring). */
+  dark: boolean
 }
 
 const FrameContext = createContext<FrameGeometry | null>(null)

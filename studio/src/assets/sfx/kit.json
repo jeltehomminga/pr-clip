@@ -25,7 +25,7 @@
    "sound": "fit/snap/switch_flip",
    "takes": 1,
    "align": "onset",
-   "note": "the details card's band lands; level matches the tick",
+   "note": "the details card's title lands; level matches the tick",
    "edits": {
     "peak_db": -2.48
    }

@@ -1,48 +1,60 @@
 import React from "react"
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion"
+import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion"
 
-import { motion } from "../brand"
+import * as brand from "../brand"
 
 type BeatProps = {
   durationInFrames: number
   /** 0 disables the fade - used where an inner sequence hard-starts or hard-ends. */
   fadeIn?: number
   fadeOut?: number
-  /** Px the beat glides in from the right while it fades in, and out to the left while it fades out. */
-  slide?: number
+  /** The beat's frames come in with the tilt (brand.motion.tilt); the end card has its own entrance. */
+  tilt?: boolean
   children: React.ReactNode
 }
 
 /**
- * Crossfade wrapper so consecutive beats dissolve instead of cutting; a states or looks
- * beat also glides a little sideways, never a whip. A fade of 0
- * is handled explicitly: handing interpolate a zero-width input range crashes the
- * render.
+ * Crossfade wrapper so consecutive beats dissolve instead of cutting. With `tilt`, the beat's frames
+ * come in lying back a few degrees, a little low and small, and stand up flat on the brand spring;
+ * going out they lift a few px as they fade. Tilted beats dip rather than dissolve: the one going out
+ * is gone before the next comes in, since two windows at different angles over each other read as
+ * a double exposure. Once landed there is no transform at all, so the captures stay
+ * pixel-sharp. A fade of 0 is handled explicitly: handing interpolate a zero-width input range
+ * crashes the render.
  */
-export const Beat: React.FC<BeatProps> = ({
-  durationInFrames,
-  fadeIn = 12,
-  fadeOut = 12,
-  slide = 0,
-  children,
-}) => {
-  const frame = useCurrentFrame()
+/** In a dip, the beat going out takes the first half of the crossfade and the next one the second. */
+const dip = 0.5
 
-  const inOpacity =
-    fadeIn > 0 ? interpolate(frame, [0, fadeIn], [0, 1], { extrapolateRight: "clamp" }) : 1
+export const Beat: React.FC<BeatProps> = ({ durationInFrames, fadeIn = 12, fadeOut = 12, tilt = false, children }) => {
+  const frame = useCurrentFrame()
+  const { fps } = useVideoConfig()
+
+  const wait = tilt ? Math.round(fadeIn * dip) : 0
+  const early = tilt ? Math.round(fadeOut * dip) : 0
+  const inOpacity = fadeIn > 0 ? interpolate(frame, [wait, fadeIn], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 1
   const outOpacity =
     fadeOut > 0
-      ? interpolate(frame, [durationInFrames - fadeOut, durationInFrames], [1, 0], {
+      ? interpolate(frame, [durationInFrames - fadeOut, durationInFrames - early], [1, 0], {
           extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
         })
       : 1
 
-  const ease = { easing: Easing.bezier(...motion.enter.curve), extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const
-  const x =
-    (fadeIn > 0 ? interpolate(frame, [0, fadeIn], [slide, 0], ease) : 0) +
-    (fadeOut > 0 ? interpolate(frame, [durationInFrames - fadeOut, durationInFrames], [0, -slide], ease) : 0)
+  const { degrees, rise, scale } = brand.motion.tilt
+  const p = tilt ? spring({ frame: frame - wait, fps, config: brand.spring }) : 1
+  const lift =
+    tilt && fadeOut > 0
+      ? interpolate(frame, [durationInFrames - fadeOut, durationInFrames], [0, 1], {
+          extrapolateLeft: "clamp",
+          easing: Easing.bezier(...brand.motion.exit.curve),
+        })
+      : 0
+  const moving = Math.abs(1 - p) > 0.002 || lift > 0
+  const transform = moving
+    ? `perspective(1800px) translateY(${((1 - p) * rise - lift * 14).toFixed(2)}px) rotateX(${((1 - p) * degrees).toFixed(3)}deg) scale(${(scale + (1 - scale) * p - lift * 0.015).toFixed(4)})`
+    : undefined
 
   return (
-    <AbsoluteFill style={{ opacity: Math.min(inOpacity, outOpacity), transform: x ? `translateX(${x}px)` : undefined }}>{children}</AbsoluteFill>
+    <AbsoluteFill style={{ opacity: Math.min(inOpacity, outOpacity), transform, transformOrigin: "50% 60%" }}>{children}</AbsoluteFill>
   )
 }

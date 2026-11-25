@@ -3,14 +3,13 @@ import React from "react"
 import * as brand from "../brand"
 import type { Capture, Rect } from "../pr-clip/timeline"
 import { FrameProvider } from "./FrameContext"
-import { frameShadow, useTone } from "./Stage"
 
 type BrowserFrameProps = {
   /** The capture being shown - its measured source size, from props.json. */
   source: Pick<Capture, "width" | "height">
   /** Rendered height of the visible page area, in composition pixels. */
   screenHeight: number
-  /** Shown in the address pill. */
+  /** Shown in the address field. */
   url?: string
   /**
    * Source pixels hidden from the bottom of the capture without scaling the
@@ -18,7 +17,7 @@ type BrowserFrameProps = {
    * must share it, or a dissolve between them changes scale.
    */
   cropBottom?: number
-  /** The capture is in dark mode: dark chrome, and the dark page colour until it loads. */
+  /** The capture is in dark mode: dark glass chrome, and the dark page colour until it loads. */
   dark?: boolean
   /**
    * Drawn over the page, on top of the content and under the same transform, but not
@@ -35,15 +34,16 @@ type BrowserFrameProps = {
   children: React.ReactNode
 }
 
-/** Window buttons, drawn grey from the tokens rather than in macOS colours. */
+/** Window buttons, drawn as neutral glass dots rather than in macOS colours. */
 const dotKeys = ["close", "minimise", "zoom"]
 
 /**
  * Web sibling of PhoneFrame. CDP screenshots carry no browser chrome, so the
- * title bar, address pill, corner radius and shadow are drawn here. The page box
- * has the exact structure of the phone's screen box (visible height, overflow
- * hidden, full-height inner layer), so Highlight's source-pixel maths is the same
- * for both.
+ * title bar, address field, corner radius and shadow are drawn here: a frosted glass bar
+ * that follows the page's theme, a 1 px light rim and a deep soft shadow. The page itself
+ * is shown as captured. The page box has the exact structure of the phone's screen box
+ * (visible height, overflow hidden, full-height inner layer), so Highlight's source-pixel
+ * maths is the same for both.
  */
 export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   source,
@@ -55,13 +55,13 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   zoom,
   children,
 }) => {
-  const tone = useTone()
+  const chrome = brand.glass.bar[dark ? "dark" : "light"]
   const visibleSourceHeight = source.height - cropBottom
   const scale = screenHeight / visibleSourceHeight
   const screenWidth = source.width * scale
   const radius = 14
   const barHeight = 44
-  const geometry = { source, cropBottom, screenHeight }
+  const geometry = { source, cropBottom, screenHeight, dark }
   // Origin unclamped, as on PhoneFrame; `shift` pans the window on the way in.
   const lean = zoom && {
     transform: `translate(${(zoom.shift?.x ?? 0) * zoom.progress}px, ${(zoom.shift?.y ?? 0) * zoom.progress}px) scale(${1 + ((zoom.to ?? brand.motion.camera.zoom) - 1) * zoom.progress})`,
@@ -76,8 +76,8 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
         style={{
           borderRadius: radius,
           overflow: "hidden",
-          background: dark ? brand.colors.darkNeutral100 : brand.colors.neutral200,
-          boxShadow: `${frameShadow[tone]}, 0 0 0 1px ${brand.colors.neutral700}77`,
+          background: chrome.fill,
+          boxShadow: `${brand.glass.shadow}, 0 0 0 1px ${brand.glass.border}`,
         }}
       >
         <div
@@ -87,32 +87,25 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             alignItems: "center",
             padding: "0 16px",
             gap: 8,
+            boxShadow: `inset 0 1px 0 ${chrome.sheen}`,
           }}
         >
           {dotKeys.map((key) => (
-            <div
-              key={key}
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 999,
-                background: dark ? brand.colors.darkNeutral400 : brand.colors.neutral400,
-              }}
-            />
+            <div key={key} style={{ width: 12, height: 12, borderRadius: 999, background: chrome.dot }} />
           ))}
           <div
             style={{
               flex: 1,
               margin: "0 12px 0 16px",
               height: 26,
-              borderRadius: 13,
-              background: dark ? brand.colors.darkNeutral50 : brand.colors.shade0,
+              borderRadius: 8,
+              background: chrome.field,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 15,
-              fontWeight: 400,
-              color: dark ? brand.colors.darkNeutral500 : brand.colors.neutral500,
+              fontWeight: brand.type.weights.regular,
+              color: chrome.url,
               whiteSpace: "nowrap",
               overflow: "hidden",
               minWidth: 0,
@@ -127,7 +120,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             height: screenHeight,
             overflow: "hidden",
             position: "relative",
-            backgroundColor: dark ? brand.colors.darkNeutral50 : brand.colors.neutral50,
+            backgroundColor: dark ? brand.colors.pageDark : brand.colors.pageLight,
           }}
         >
           <div

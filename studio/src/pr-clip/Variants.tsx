@@ -31,8 +31,8 @@ type VariantsProps = {
 /**
  * After-only variants of the fix side by side: the app in dark mode and another language, the
  * web page in another language, on a tablet and on a phone. Every frame is an after state, so
- * every chip is solid green and every ring is a fix ring. A dark capture gets dark browser chrome.
- * A recording plays from the rings.
+ * every chip has the teal dot and every bracket is a fix bracket. A dark capture gets dark browser
+ * chrome. A recording plays from the rings.
  */
 export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, maxScreenHeight = webMax, mark }) => {
   if (platform === "app") {
@@ -43,8 +43,7 @@ export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, 
             key={c.label}
             capture={c}
             label={c.label}
-            solid
-            ringColor={ring.fix}
+            kind="fix"
             ringsAt={beat.ringsAt}
             playAt={beat.ringsAt}
             screenHeight={beat.tall ? tallScreen : pairScreen}
@@ -62,7 +61,7 @@ export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, 
     <AbsoluteFill style={row}>
       {group.captures.map((c) => (
         <div key={c.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 22 }}>
-          <Chip tone="solid">{c.label}</Chip>
+          <Chip dot={ring.fix}>{c.label}</Chip>
           <BrowserFrame
             source={c}
             screenHeight={screenHeight}
@@ -73,7 +72,7 @@ export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, 
               <Highlight
                 key={`${r.left}-${r.top}-${r.width}-${r.height}`}
                 rect={r}
-                color={ring.fix}
+                kind="fix"
                 delay={beat.ringsAt + (r.delay ?? 0)}
                 look={mark}
               />

@@ -3,9 +3,9 @@ import { Audio, Sequence, staticFile } from "remotion"
 
 import { Beat } from "../components/Beat"
 import { Caption } from "../components/Caption"
-import { Stage, type Tone } from "../components/Stage"
+import { Stage } from "../components/Stage"
 import { AppPair } from "./AppPair"
-import { bandLands, EndCard } from "./EndCard"
+import { cardLands, EndCard } from "./EndCard"
 import { Outro } from "./Outro"
 import { Progress } from "./Progress"
 import { sounds } from "./sounds"
@@ -13,17 +13,12 @@ import { crossfade, focusOf, timeline, wipeFastest, type PrClipProps } from "./t
 import { Variants } from "./Variants"
 import { WebWipe } from "./WebWipe"
 
-/** Stage tone when a clip's props leave `stage` unset. */
-export const defaultTone: Tone = "light"
-/** Px a states or looks beat glides in and out. */
-const variantSlide = 60
-
 /**
  * A PR before/after clip, laid out by timeline(): the first pair is on screen
  * from frame 0 with the why as its first caption (result first), one beat per
  * pair, one per group of variants, then the details end card (or just the ticket
  * key). A tick marks each fix bracket, a whoosh each wipe (peaking on its fastest frame), a
- * snap the details band landing (sounds.ts).
+ * snap the details card's title landing (sounds.ts).
  */
 export const PrClip: React.FC<PrClipProps> = (props) => {
   const t = timeline(props)
@@ -33,12 +28,12 @@ export const PrClip: React.FC<PrClipProps> = (props) => {
     // The tick lands with the first fix ring, which may wait for a recording to reach its end state.
     if (beat.kind === "pair") return [{ role: "tick", at: beat.from + beat.afterRingsAt + (props.pairs[beat.index].after.rings?.[0]?.delay ?? 0) }]
     if (beat.kind === "variants") return [{ role: "tick", at: beat.from + beat.ringsAt }]
-    if (beat.kind === "outro" && props.details) return [{ role: "snap", at: beat.from + bandLands }]
+    if (beat.kind === "outro" && props.details) return [{ role: "snap", at: beat.from + cardLands }]
     return []
   }).filter((cue) => sounds[cue.role].length > 0)
 
   return (
-    <Stage tone={props.stage ?? defaultTone}>
+    <Stage>
       {t.beats.map((beat, i) => {
         const duration = beat.duration + (i === last ? 0 : crossfade)
 
@@ -48,7 +43,7 @@ export const PrClip: React.FC<PrClipProps> = (props) => {
               durationInFrames={duration}
               fadeIn={i === 0 ? 0 : crossfade}
               fadeOut={i === last ? 0 : crossfade}
-              slide={beat.kind === "variants" ? variantSlide : 0}
+              tilt={beat.kind !== "outro"}
             >
               {beat.kind === "outro" &&
                 (props.details ? (
