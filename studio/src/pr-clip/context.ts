@@ -7,13 +7,16 @@ import { ms, timeline, type CaptureContext, type PrClipProps } from "./timeline.
  * mp4, never a separate file, so it can't get lost. Built from props.json and timeline(), the
  * same inputs as the render, so the two can't drift apart.
  */
-const howToRead = [
-  "Silent clip, captions burned in; frame = ms * 30 / 1000.",
-  "A web pair shows the before page, then wipes to the after page; an app pair shows the before phone left and the after phone right.",
-  "Orange corner brackets mark the problem, green ones the fix; on a pair that zooms in they blink twice and go as the zoom lands, so the zoomed change at atMs shows without them. Variants are after states side by side under chip labels.",
-  "atMs is a frame where the chapter has landed: ffmpeg -ss <atMs/1000> -i <mp4> -frames:v 1 out.png.",
-  "Captured from a local build of pr.commit against the capture.env backend; if the PR head has moved since, the clip may be out of date.",
-].join(" ")
+const howToRead = (voiced: boolean) =>
+  [
+    voiced
+      ? "Captions burned in, and a voice reads each one; frame = ms * 30 / 1000."
+      : "Silent clip, captions burned in; frame = ms * 30 / 1000.",
+    "A web pair shows the before page, then wipes to the after page; an app pair shows the before phone left and the after phone right.",
+    "Orange corner brackets mark the problem, green ones the fix; on a pair that zooms in they blink twice and go as the zoom lands, so the zoomed change at atMs shows without them. Variants are after states side by side under chip labels.",
+    "atMs is a frame where the chapter has landed: ffmpeg -ss <atMs/1000> -i <mp4> -frames:v 1 out.png.",
+    "Captured from a local build of pr.commit against the capture.env backend; if the PR head has moved since, the clip may be out of date.",
+  ].join(" ")
 
 /** Identifiers never leave in full; only short forms pass (4711…0042). The list is identifiers.json. */
 const guards: [kind: string, pattern: RegExp][] = identifiers.patterns.map((p) => [p.kind, new RegExp(p.regex, "i")])
@@ -87,7 +90,7 @@ export function context(props: PrClipProps): string {
     notShown: props.notShown,
     captions: t.cues.map(({ text, startMs, endMs }) => ({ text, startMs, endMs })),
     details: props.details,
-    howToRead,
+    howToRead: howToRead(!!props.voice),
   }
   guard(out, "")
   return asciiJson(out)
