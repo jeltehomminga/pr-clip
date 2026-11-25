@@ -31,7 +31,8 @@ type VariantsProps = {
 /**
  * After-only variants of the fix side by side: the app in dark mode and another language, the
  * web page in another language, on a tablet and on a phone. Every frame is an after state, so
- * every chip is solid green and every ring is a fix ring. A recording plays from the rings.
+ * every chip is solid green and every ring is a fix ring. A dark capture gets dark browser chrome.
+ * A recording plays from the rings.
  */
 export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, maxScreenHeight = webMax, mark }) => {
   if (platform === "app") {
@@ -67,6 +68,7 @@ export const Variants: React.FC<VariantsProps> = ({ group, beat, platform, url, 
             screenHeight={screenHeight}
             url={c.url ?? url}
             cropBottom={c.cropBottom}
+            dark={c.dark}
             overlay={c.rings?.map((r) => (
               <Highlight
                 key={`${r.left}-${r.top}-${r.width}-${r.height}`}

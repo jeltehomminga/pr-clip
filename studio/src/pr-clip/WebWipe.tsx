@@ -61,6 +61,7 @@ export const WebWipe: React.FC<WebWipeProps> = ({ pair, beat, url, zoomTo, mark 
         screenHeight={screenHeight}
         url={url}
         cropBottom={pair.before.cropBottom}
+        dark={pair.before.dark}
         zoom={focus && { rect: focus, progress: leaned, to, shift: to === undefined ? undefined : camera(focus, pair.after, to) }}
       >
         <Page capture={pair.before} playAt={beat.playAt} />
