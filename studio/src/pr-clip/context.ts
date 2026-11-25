@@ -13,7 +13,7 @@ const howToRead = (voiced: boolean) =>
       ? "Captions burned in, and a voice reads each one; frame = ms * 30 / 1000."
       : "Silent clip, captions burned in; frame = ms * 30 / 1000.",
     "A web pair shows the before page, then wipes to the after page; an app pair shows the before phone left and the after phone right.",
-    "Orange corner brackets mark the problem, green ones the fix; on a pair that zooms in they blink twice and go as the zoom lands, so the zoomed change at atMs shows without them. Variants are after states side by side under chip labels.",
+    "Coral corner brackets mark the problem, teal ones the fix; on a pair that zooms in they blink twice and go as the zoom lands, so the zoomed change at atMs shows without them. Variants are after states side by side under chip labels.",
     "atMs is a frame where the chapter has landed: ffmpeg -ss <atMs/1000> -i <mp4> -frames:v 1 out.png.",
     "Captured from a local build of pr.commit against the capture.env backend; if the PR head has moved since, the clip may be out of date.",
   ].join(" ")
