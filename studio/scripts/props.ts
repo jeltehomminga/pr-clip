@@ -98,6 +98,8 @@ function main() {
   const dir = `videos/${key}`
   const file = `${dir}/props.json`
   const props: Draft = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { issueKey: key }
+  // Written back only when the content changed, so a file nothing fills keeps its own layout.
+  const read = existsSync(file) ? JSON.stringify(props) : undefined
   const changed = new Set<string>()
   const put = <T extends object, K extends keyof T>(target: T, field: K, value: T[K], where: string) => {
     const was = JSON.stringify(target[field])
@@ -193,7 +195,7 @@ function main() {
   }
 
   mkdirSync(dir, { recursive: true })
-  writeFileSync(file, JSON.stringify(props, null, 2) + "\n")
+  if (JSON.stringify(props) !== read) writeFileSync(file, JSON.stringify(props, null, 2) + "\n")
   console.log(changed.size > 0 ? [...changed].join("\n") : `${file}: nothing changed`)
 }
 
