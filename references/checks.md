@@ -46,7 +46,7 @@ Crop or re-shoot anything that is not the product: a watermark, status-bar clutt
 - **format.** Remotion tags only the colour matrix, and recent ffmpeg ignores `-color_primaries` / `-color_trc` on encode. So `render.sh` retags the stream with the `h264_metadata` bitstream filter, without encoding again.
 - **tail.** Remotion's AAC runs about 60 ms past the last frame, and QuickTime shows black for that tail: every clip seemed to end on a black screen. `render.sh` trims the audio with `atrim=end=<video duration>`.
 - **context.** `render.sh` writes the agent context from `scripts/context.ts` into the mp4's `comment` tag. ASCII, so `strings` returns it whole.
-- **size.** At most 5 MB, with a warning above 2.5 MB per 30 s. `maxSeconds` in `props.json` lifts the 60 s cap, and the share copy may then take 5 MB per 60 s. A lean-in about doubles the bitrate of a still pair: 0.6 → 1.6 MB for a 24 s app clip.
+- **size.** At most 5 MB, with a warning above 3 MB per 30 s. The stage's grain alone puts a clip near 2.6 MB per 30 s. `maxSeconds` in `props.json` lifts the 60 s cap, and the share copy may then take 5 MB per 60 s. A lean-in about doubles the bitrate of a still pair: 0.6 → 1.6 MB for a 24 s app clip.
 - **gif.** The first 6 s, at most 2.5 MB.
 - **fit.** The caption and the end card log `FIT:` (`console.error`) when their text overflows.
   - Measure on a box that can't shrink. A render tab mounts at 251 px wide, and a shrinkable flex item logged a false FIT; hence `flexShrink: 0`.

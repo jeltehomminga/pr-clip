@@ -101,21 +101,11 @@ It prints `total posterFrame motionFrame`. `total` / 30 is the length in seconds
 
 ## How the studio plays the beats
 
-The studio enforces these rules. Plan the inventory with them in mind.
+The studio's `CLAUDE.md` § Look and § End card hold the rules. These are the ones that change the inventory or the storyboard:
 
 - **Result first.** The after state and the why are on screen within 3 s. A recorded before pushes that later; that is accepted for a transition, because the transition is the point.
-- **Corner brackets**, never a closed ring: a ring reads as a UI border. Coral marks the problem, teal the fix (`ring` in `src/brand.ts`). They sit 10 px clear of the element.
-- **One lean-in per pair**, onto its first after bracket, only once the after state has landed (never during the swap), in 1 s moves.
-  - Web: zoom to fit, so the change fills about 70 % of the window (1.25–1.8×), with a camera pan.
-  - App: one camera on the whole pair. Both phones scale around the midpoint of their fixes, so they move apart and never overlap. Full-width cards stay near 1.25×; a small target (a tab-bar icon) reaches 1.8×.
-  - The brackets on both sides blink twice and go as the lean-in lands, so nothing stays over the UI.
-  - A pair whose lean-in would push any bracket out of the footage band (a sticky button flush with the bottom, a second change far from the first) gets no lean-in. The studio decides from the brackets.
-  - `focus: {}` in `props.json` keeps a clip on the plain 1.25× lean with steady brackets.
-- **States and looks beats** show taller phones, with the tab bar fading out above the caption band. A beat with a bracket near the bottom (tab bar, sticky button, bottom sheet, toast) keeps the pair size and no fade. So a change down there needs a bracket, or it can fade out of view.
-- **The details card** closes every clip that has `details`.
-  - Right side: the first pair's after state again, so anyone who jumps to the end still sees the change.
-  - Facts come only from what exists when the clip is made, and nothing that goes stale once posted: no review status and no reviewers while the PR is open.
-  - Before the merge: Developer · Screen · Captured. After it: Developer · Reviewers · Merged · Release or First build · Screen · Captured.
+- **Plan where the brackets go.** A pair gets no lean-in when it would push any bracket out of the footage band (a sticky button flush with the bottom, a second change far from the first). The studio decides from the brackets.
+- **States and looks beats** fade the tab bar out above the caption band, unless a bracket sits near the bottom (tab bar, sticky button, bottom sheet, toast). So a change down there needs a bracket, or it can fade out of view.
 
 ## Ask the user only when
 

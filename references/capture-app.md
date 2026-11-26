@@ -4,6 +4,15 @@ Capture an app's before and after sides on a clean device clone, with a clean st
 
 Run every command from the studio: `cd "${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}"`. Files go in `videos/<KEY>/media/`. `<udid>` is an iOS simulator, `<serial>` an Android emulator; `<device>` is either.
 
+Contents:
+
+- Setup: Tools · Device: its own clone per clip · Both sides at once · Metro and the dev client
+- Clean frames: Status bar · Gates before every capture
+- Capture: Stills and recordings · Force a state
+- Looks and states: Theme and language · Variants
+- Replay: Takes you can replay
+- Fallback: Without argent (untested)
+
 ## Tools
 
 - **argent** drives the device: describe, tap, swipe, screenshot, record, e2e YAML, debugger-evaluate.
@@ -131,6 +140,7 @@ No leftovers: a detour through iOS Settings leaves a "◀ Settings" back link in
 - **Timing.** A `run-sequence` step's `delayMs` waits *after* its step, but a `gesture-custom` event's `delayMs` waits *before* it. So a lead-in before a gesture goes on the step before it, or on the gesture's first event. One recording started with no lead-in because of this.
 - **Drags** (Android): `gesture-custom` with a Down, a Move on the same point with `delayMs` 700 (the hold), then a Move to the target with `delayMs` 1100–1500 and `interpolate: 45`. The same events on both sides land the finger on the same frame.
 - **A still cut from a recording with touches shown:** the touch dot lingers about 8 frames after the finger lifts. Pick a frame where it is gone.
+  - The same goes for a recording's end: its last frame becomes the end hold. Trim it 8 or more frames after the finger lifts, or the end hold keeps the dot. One clip held the touch dot where a tapped button had been.
 - **Footage recorded with the watermark on:** take it again. If you can't, `cropBottom` of 138 on a 1206×2622 capture (the stamp's top edge is at y 2494). A crop beats a blur patch here.
 - **A bracket on a screen that appears mid-recording** gets a `delay`: the frames until that screen shows.
 - **Trims.** `node scripts/capture-check.js <KEY>` prints, per recording, the motion runs and rest frames for the whole frame and for each take's `probe` region. Read both lines: probe regions came within 1 frame of a frame-by-frame read, the whole frame within 2. A whole-screen mean luma put drag landings 20–23 frames early. For a region no probe covers, use `node scripts/frame-probe.js <mp4> --crop W:H:X:Y` (with `--from`, frames are `t × 30`). Then `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/props.ts <KEY>` makes the hold stills.
