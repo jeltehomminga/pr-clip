@@ -44,7 +44,7 @@ export function plainTitle(title: string) {
 }
 
 /**
- * The end card (studio CLAUDE.md, details card). Only facts that stay true once the clip is posted:
+ * The end card (studio AGENTS.md, details card). Only facts that stay true once the clip is posted:
  * before the merge just the Developer, since status and reviewers change while the PR is open.
  * After: Developer, Reviewers, Merged, and the first stable tag as Release, else the first tag as
  * First build. Screen and Captured are the agent's.

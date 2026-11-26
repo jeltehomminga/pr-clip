@@ -1,6 +1,6 @@
 # PR clip studio
 
-Remotion 4.0.520 studio for before/after clips of pull requests. House rules: `CLAUDE.md`. Procedure: the `pr-clip` skill.
+Remotion 4.0.520 studio for before/after clips of pull requests. House rules: `AGENTS.md` (`CLAUDE.md` imports it). Procedure: the `pr-clip` skill.
 
 ```bash
 npm ci

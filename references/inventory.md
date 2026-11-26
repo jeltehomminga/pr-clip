@@ -101,7 +101,7 @@ It prints `total posterFrame motionFrame`. `total` / 30 is the length in seconds
 
 ## How the studio plays the beats
 
-The studio's `CLAUDE.md` § Look and § End card hold the rules. These are the ones that change the inventory or the storyboard:
+The studio's `AGENTS.md` § Look and § End card hold the rules. These are the ones that change the inventory or the storyboard:
 
 - **Result first.** The after state and the why are on screen within 3 s. A recorded before pushes that later; that is accepted for a transition, because the transition is the point.
 - **Plan where the brackets go.** A pair gets no lean-in when it would push any bracket out of the footage band (a sticky button flush with the bottom, a second change far from the first). The studio decides from the brackets.

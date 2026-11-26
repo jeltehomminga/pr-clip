@@ -18,7 +18,7 @@ check("a Sonar-only commit is same-ui", () => {
 })
 
 check("tests, stories, docs and CI never render", () => {
-  const files = ["src/screens/Home/Home.test.tsx", "src/x/__tests__/a.ts", "src/x/Card.stories.tsx", "README.md", ".github/workflows/pr.yml", "jest.config.js"]
+  const files = ["src/screens/Home/Home.test.tsx", "src/x/__tests__/a.ts", "src/x/Card.stories.tsx", "README.md", ".github/workflows/pr.yml", ".codex/config.toml", "jest.config.js"]
   assert.deepEqual(triage(moved({ changed: files, own: files })), [])
 })
 
