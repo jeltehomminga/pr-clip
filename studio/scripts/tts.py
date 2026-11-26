@@ -9,7 +9,7 @@ next one starts max(0.4, chars / 17 - spoken seconds) later: a caption held unti
 cue then stays up long enough to read (17 characters per second).
 Writes <out dir>/<beat>.wav and <out dir>/<beat>.cues.json, [{text, start, end}] in seconds,
 end being the end of speech.
-KOKORO_SPEED sets the pace (default 0.95); KOKORO_HOME the install (default ~/.local/share/kokoro-tts,
+KOKORO_SPEED sets the pace (default 0.9); KOKORO_HOME the install (default ~/.local/share/kokoro-tts,
 made by scripts/setup-tts.sh).
 """
 
@@ -26,7 +26,7 @@ if len(sys.argv) < 3:
     sys.exit(__doc__)
 src, out = Path(sys.argv[1]), Path(sys.argv[2])
 voice = sys.argv[3] if len(sys.argv) > 3 else "af_heart"
-speed = float(os.environ.get("KOKORO_SPEED", "0.95"))
+speed = float(os.environ.get("KOKORO_SPEED", "0.9"))
 models = Path(os.environ.get("KOKORO_HOME", Path.home() / ".local/share/kokoro-tts"))
 beats = sorted(src.glob("*.txt"))
 if not beats:
@@ -51,4 +51,4 @@ for txt in beats:
             n += len(parts[-1])
     sf.write(out / f"{txt.stem}.wav", np.concatenate(parts), rate)
     (out / f"{txt.stem}.cues.json").write_text(json.dumps(cues, indent=2) + "\n")
-    print(f"{txt.stem}: {len(lines)} cues, {n / rate:.2f}s")
+    print(f"{txt.stem}: {len(lines)} cues, {n / rate:.2f}s at speed {speed}")

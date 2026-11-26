@@ -2,8 +2,8 @@
 # Narration for one film. Kokoro reads videos/<KEY>/vo-src/NN-beat.txt (one sentence per line,
 # one caption cue each) into videos/<KEY>/media/vo/<beat>.wav, levelled to -16 LUFS, 48 kHz mono,
 # and sets .voice = { "<beat>": { file, frames, cues } } in videos/<KEY>/props.json.
-#   scripts/render-vo.sh <KEY> [voice]           af_heart (default); to compare: af_bella, af_sarah, af_nicole, bf_emma
-#   KOKORO_SPEED=0.9 scripts/render-vo.sh <KEY>  slower (default 0.95); try another voice before another speed
+#   scripts/render-vo.sh <KEY> [voice]            af_heart (default); to compare: af_bella, af_sarah, af_nicole, bf_emma
+#   KOKORO_SPEED=0.85 scripts/render-vo.sh <KEY>  slower (default 0.9); try another voice before another speed
 # Prints per beat: seconds, frames at 30 fps, words, wpm and the measured loudness.
 # media/vo/ is emptied first and .voice is replaced whole, so a removed beat leaves nothing behind.
 set -euo pipefail
@@ -52,4 +52,4 @@ done
 jq --slurpfile v "$raw/voice.json" '.voice = $v[0]' "$props" >"$props.next"
 mv "$props.next" "$props"
 echo
-echo "voice: $voice, speed ${KOKORO_SPEED:-0.95}; .voice written to $props (internal pace 150-170 wpm, -16 LUFS +-1)"
+echo "voice: $voice; .voice written to $props (internal pace 150-170 wpm, -16 LUFS +-1)"
