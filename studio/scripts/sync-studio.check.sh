@@ -25,4 +25,10 @@ echo "// mine" >>"$copy/src/brand.ts"
 [ -z "$($sync check)" ] || fail "the user's own edit counts as drift"
 echo old-skill >"$copy/.skill-stamp"
 $sync check | grep -q 'src/brand.ts' || fail "a changed skill does not list the edited brand.ts"
-echo "sync-studio: 7 checks passed"
+# Same size and mtime as the skill's file, other content: the update must still copy it.
+printf '%s' "$(head -c "$(wc -c <src/brand.ts)" /dev/zero | tr '\0' x)" >"$copy/src/brand.ts"
+touch -r src/brand.ts "$copy/src/brand.ts"
+$sync update >/dev/null
+cmp -s src/brand.ts "$copy/src/brand.ts" || fail "the update missed a change of the same size and mtime"
+[ "$(ls -d "$copy"/.pre-update-* | wc -l | tr -d ' ')" = 2 ] || fail "two updates in one second share a backup"
+echo "sync-studio: 9 checks passed"

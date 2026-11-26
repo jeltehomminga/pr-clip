@@ -41,9 +41,11 @@ case $mode in
     else
       npm="npm ci && npm test"
     fi
-    backup="$dest/.pre-update-$(date +%Y%m%d-%H%M%S)"
+    # A folder of its own each time: two updates in one second must not share a backup.
+    backup=$(mktemp -d "$dest/.pre-update-$(date +%Y%m%d-%H%M%S)-XXXX")
     rsync -a "${f[@]}" "$dest/" "$backup/"
-    rsync -a --delete "${f[@]}" "$src/" "$dest/"
+    # -c, as in check: a changed file can keep its size and mtime.
+    rsync -ac --delete "${f[@]}" "$src/" "$dest/"
     stamp >"$dest/.skill-stamp"
     echo "old files in $backup"
     echo "then: cd \"$dest\" && $npm"
