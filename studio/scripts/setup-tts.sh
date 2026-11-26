@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time, idempotent Kokoro-82M install shared by every promo project.
+# One-time, idempotent Kokoro-82M install shared by every clip.
 #   scripts/setup-tts.sh    (in the studio)
 # venv + the two model files (~340 MB) land in $KOKORO_HOME (default
 # ~/.local/share/kokoro-tts). Re-run any time: every step is skipped when present.

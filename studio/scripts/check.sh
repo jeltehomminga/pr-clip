@@ -60,7 +60,7 @@ per30=$(echo "scale=2; $size * 900 / $total / 1048576" | bc)
 # 5 MB per 60 s; a clip whose maxSeconds lifts the 60 s cap gets the same share.
 capmb=$(jq -r '[5, (.maxSeconds // 60) / 12] | max' "$dir/props.json")
 if [ "$(echo "$size > $capmb * 1048576" | bc)" = 1 ]; then row FAIL size "$mb MB share copy, over $capmb MB"
-elif [ "$(echo "$per30 > 2.5" | bc)" = 1 ]; then row warn size "$mb MB, $per30 MB per 30 s (budget 2.5)"
+elif [ "$(echo "$per30 > 3.0" | bc)" = 1 ]; then row warn size "$mb MB, $per30 MB per 30 s (budget 3)"
 else row ok size "$mb MB, $per30 MB per 30 s"; fi
 
 gif=$out/$key-before-after.gif

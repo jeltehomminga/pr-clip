@@ -3,7 +3,7 @@
 // vo-src/ is rewritten whole, so a reworded caption never keeps an old line; timeline() fails a voice that
 // doesn't say its caption any more.
 //   node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/vo-captions.ts <KEY>
-//   then: KOKORO_SPEED=0.9 scripts/render-vo.sh <KEY>
+//   then: scripts/render-vo.sh <KEY>
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 
 import { voiceLines } from "../src/pr-clip/timeline.ts"
