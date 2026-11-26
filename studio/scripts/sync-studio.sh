@@ -14,7 +14,8 @@ dest=${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}
 mode=${1:-}
 [ -f "$dest/package.json" ] || { echo "no studio copy at $dest: SKILL.md § Setup makes one" >&2; exit 1; }
 # One list for the check, the backup and the update. The clips stay; EXAMPLE follows the skill.
-f=(--exclude node_modules/ --exclude .remotion/ --exclude out/ --exclude .git/ --exclude .claude/ --exclude .DS_Store
+# A dot-folder at the top of the copy is a tool's own (.cursor/, .codex/, .vscode/): it stays too.
+f=(--exclude '/.*/' --exclude node_modules/ --exclude .remotion/ --exclude out/ --exclude .git/ --exclude .claude/ --exclude .DS_Store
   --exclude clip.log --exclude '.pre-update-*/' --exclude .skill-stamp --include /videos/EXAMPLE/ --exclude '/videos/*')
 
 # The skill's studio as one hash, by path and content, through the same list.
