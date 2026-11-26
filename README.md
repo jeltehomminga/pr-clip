@@ -5,7 +5,7 @@ A Claude Code skill that makes before/after video clips of a pull request: the o
 ## Install
 
 1. Clone it into your skills folder: `git clone https://github.com/jeltehomminga/pr-clip ~/.claude/skills/pr-clip`. A zip works too: unzip it so this file sits at `~/.claude/skills/pr-clip/README.md`.
-2. Ask Claude Code for "a PR clip of <owner/repo>#<number>". On first use it copies `studio/` to `~/pr-clip-studio` (or `$PR_CLIP_STUDIO`) and sets it up: SKILL.md § Setup.
+2. Ask Claude Code for "a PR clip of <owner/repo>#<number>". On first use it copies `studio/` to `~/pr-clip-studio` (or `$PR_CLIP_STUDIO`) and sets it up: SKILL.md § Setup. After you update the skill (`git pull`), the next clip session offers to bring that copy up to date, with a backup of the old files: SKILL.md § Start of every clip session.
 
 Written for macOS and Claude Code. Needs Node 24+, ffmpeg, jq, bc, the `gh` CLI and Homebrew; Chrome for web clips; Xcode and/or the Android SDK, a built Expo dev client, argent and simslim for app clips. SKILL.md § Setup has the commands.
 
