@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "studio": "remotion studio",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/pr-clip/timeline.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/props.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/stale.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/capture-check.check.ts && tsc --noEmit"
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/pr-clip/timeline.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/props.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/stale.check.ts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/capture-check.check.ts && scripts/sync-studio.check.sh && tsc --noEmit"
   },
   "dependencies": {
     "@remotion/cli": "4.0.520",

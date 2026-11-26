@@ -5,3 +5,5 @@ videos/*
 !videos/EXAMPLE/
 .claude/
 clip.log
+.pre-update-*/
+.skill-stamp
