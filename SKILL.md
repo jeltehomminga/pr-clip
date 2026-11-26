@@ -2,22 +2,24 @@
 name: pr-clip
 description: Makes before/after video clips of a GitHub pull request. Use when the user asks for a PR clip, a before/after video, "make a video of this PR or feature", or a video for a code review. Films web pages over Chrome DevTools and iOS/Android apps through argent, shows every state the PR built with captions read aloud and an end card of the PR's facts, and renders locally with Remotion.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # PR clip
 
-The studio (`studio/` in this skill, copied once to `$PR_CLIP_STUDIO`, default `~/pr-clip-studio`) owns the code, the checks and the house rules: read its `CLAUDE.md` first. Where the two differ, the studio wins. This skill is the procedure around it: which facts to fetch, how to capture, how to review and hand over.
+The studio (`studio/` in this skill, copied once to `$PR_CLIP_STUDIO`, default `~/pr-clip-studio`) owns the code, the checks and the house rules: read its `AGENTS.md` first. Where the two differ, the studio wins. This skill is the procedure around it: which facts to fetch, how to capture, how to review and hand over.
 
-Read `references/*.md` only by the sections a step names: `grep -n '^## ' references/<file>.md` gives their lines, then Read with offset and limit.
+Read `references/*.md` only by the sections a step names: `grep -n '^## ' references/<file>.md` gives their lines, then read only those lines.
+
+`<skill>` below is the folder this file is in. In Claude Code that is `${CLAUDE_SKILL_DIR}`; in any other tool it is the folder you loaded this file from.
 
 ## Setup (once per machine)
 
-The skill is written for macOS (`open`, `xcrun`, Homebrew) and Claude Code (its subagents). Base tools: Node 24 or later (the studio runs `.ts` files directly), ffmpeg and ffprobe, jq, bc and the `gh` CLI (`brew install node ffmpeg jq gh`).
+The skill is written for macOS (`open`, `xcrun`, Homebrew) and for an agent that runs shell commands and looks at images. Base tools: Node 24 or later (the studio runs `.ts` files directly), ffmpeg and ffprobe, jq, bc and the `gh` CLI (`brew install node ffmpeg jq gh`).
 
 Check each tool with `command -v` first. Ask the user before any install outside the studio (`brew install`, `npm i -g`).
 
-1. Studio: copied once, into a target that doesn't exist yet (`cp -R` nests the folder inside one that does): `dest="${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}"; [ ! -e "$dest" ] && cp -R "${CLAUDE_SKILL_DIR}/studio" "$dest" && cd "$dest" && npm ci && npm test`. Once it exists, § Start of every clip session keeps it current. Keep the copy in git if you like; `videos/*` stays out except `EXAMPLE`.
+1. Studio: copied once, into a target that doesn't exist yet (`cp -R` nests the folder inside one that does): `dest="${PR_CLIP_STUDIO:-$HOME/pr-clip-studio}"; [ ! -e "$dest" ] && cp -R "<skill>/studio" "$dest" && cd "$dest" && npm ci && npm test`. Once it exists, § Start of every clip session keeps it current. Keep the copy in git if you like; `videos/*` stays out except `EXAMPLE`.
 2. Voice (needed for voiced clips): `brew install python@3.13`, then `scripts/setup-tts.sh` (a venv with kokoro-onnx and about 340 MB of model files).
 3. GitHub: `gh auth status` must show a login that can read the repo.
 4. Web clips: a Chrome of its own on port 9333 with a scratch profile, signed in to the test environment by hand once: `open -na "Google Chrome" --args --remote-debugging-port=9333 --user-data-dir="$HOME/.cache/pr-clip-chrome"`. Never use the user's everyday browser profile.
@@ -28,10 +30,10 @@ Licences: Remotion is free for individuals and companies of up to 3 people; a bi
 
 ## Start of every clip session
 
-1. **The studio matches this skill.** The copy doesn't follow skill updates, and its old house rules would win. Run `"${CLAUDE_SKILL_DIR}/studio/scripts/sync-studio.sh" check`.
+1. **The studio matches this skill.** The copy doesn't follow skill updates, and its old house rules would win. Run `"<skill>/studio/scripts/sync-studio.sh" check`.
    - No output: carry on. The user's own edits since the last sync don't show.
    - Otherwise the skill changed. Show the user the list and ask before you update. `src/brand.ts` and `identifiers.json` are the files a user most likely changed.
-   - On a yes: `"${CLAUDE_SKILL_DIR}/studio/scripts/sync-studio.sh" update`, then the npm command it prints. Every clip in `videos/` except `EXAMPLE` stays. The old files go to `.pre-update-<time>/`: put the user's own changes to `brand.ts` or `identifiers.json` back from there, then run `npm test` again.
+   - On a yes: `"<skill>/studio/scripts/sync-studio.sh" update`, then the npm command it prints. Every clip in `videos/` except `EXAMPLE` stays. The old files go to `.pre-update-<time>/`: put the user's own changes to `brand.ts` or `identifiers.json` back from there, then run `npm test` again.
 2. **Posted clips are current:** run `scripts/stale.sh` in the studio, and act on each verdict (step 9).
 
 ## Choosing a look or a motion
@@ -45,7 +47,7 @@ Licences: Remotion is free for individuals and companies of up to 3 people; a bi
 
 Start a clip in a fresh session in the PR's repo, never at the end of a long session: every turn carries the whole context. `<KEY>` is the clip's folder under `videos/`, for example `shop-42` for PR #42 of `acme/shop`. props.json calls it `issueKey`: the end card's dateline and the agent context show it, and `check.sh` matches it. All studio commands run in the studio; `node` below means `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON`.
 
-Subagents you hand work to start fresh. Their prompts carry the clip's key and the identifier rule: identifiers in short form only (4711…0042). Capture and 1:1 check subagents can run at low effort: they run scripts and read what the scripts print.
+Subagents you hand work to start fresh. Their prompts carry the clip's key and the identifier rule: identifiers in short form only (4711…0042). Capture and 1:1 check subagents can run at low effort or on a small model: they run scripts and read what the scripts print. In a tool without subagents, do those steps yourself.
 
 1. **Facts, read-only.** Clips are usually made while the PR is still open, so take only what exists now.
    - Run `node scripts/props.ts <KEY> --pr <owner/repo>#<number> --checkout <your clone>`. From `gh pr view`, `gh issue view` (the issue the PR closes) and git (a `git fetch` in the clone, never a switch) it writes into props.json:
@@ -56,7 +58,7 @@ Subagents you hand work to start fresh. Their prompts carry the clip's key and t
    - It fills only what is missing, so a hand edit survives the next run; delete a field to have it fetched again. Screen and Captured are yours to add at step 5.
    - Write `videos/<KEY>/review.md` yourself, the clip's log from here on (no script makes it). Done when it names the PR, its state, the before commit, the "Captured commit" and the facts.
 2. **Inventory and storyboard, worked out, not asked.** Every state, scenario, interaction and transition the PR built: the rules in `references/inventory.md` decide the rows, which ones go in, still or recording, and the beats.
-   - Hand the reading to one subagent, even when doing it yourself looks quicker. The diff, the PR description, the issue, the designs and the PR's screenshots are long: read in this session, they ride along in every later turn of the clip, and a clip runs 23–40 agent minutes. Its brief carries the repo path, the before and after commits, the PR and the issue it closes, the design links, `${CLAUDE_SKILL_DIR}/references/inventory.md` to apply, and "return only the table and the beat list".
+   - Hand the reading to one subagent, even when doing it yourself looks quicker. The diff, the PR description, the issue, the designs and the PR's screenshots are long: read in this session, they ride along in every later turn of the clip, and a clip runs 23–40 agent minutes. Its brief carries the repo path, the before and after commits, the PR and the issue it closes, the design links, `<skill>/references/inventory.md` to apply, and "return only the table and the beat list".
    - Done when `review.md` § v1 holds the table and the beat list, and `node scripts/frames.ts videos/<KEY>/props.json` of a draft stays within 60 s. A draft has no media yet: give each capture a placeholder `file` with the size it will have (1206×2622 for an iPhone 17 Pro, 2700×1520 for a 1350×760@2 page) and, for a recording, a `trimAfter` of its expected length in frames. `props.ts` measures the real ones at step 5.
    - Ask the user only when a rule can't decide (`inventory.md` § Ask the user only when).
    - The table also feeds the agent context: each kept row's render branch, files (repo-relative, no line numbers), i18n keys and reach go into `state` on its pair or capture; each out row goes into `notShown` with its reason; the design link you compared against goes into `figma`.

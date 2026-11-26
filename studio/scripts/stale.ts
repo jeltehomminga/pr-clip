@@ -22,7 +22,7 @@ import { gh, run, type GhPr } from "./props.ts"
 const quiet = [
   /(^|\/)sonar-project\.properties$/,
   /\.(test|spec)\.[cm]?[jt]sx?$/,
-  /(^|\/)(__tests__|__mocks__|e2e|\.maestro|\.storybook|\.rnstorybook|\.github|\.circleci|\.husky|\.eas|docs|\.claude|\.cursor|\.vscode)\//,
+  /(^|\/)(__tests__|__mocks__|e2e|\.maestro|\.storybook|\.rnstorybook|\.github|\.circleci|\.husky|\.eas|docs|\.claude|\.cursor|\.agents|\.codex|\.gemini|\.opencode|\.vscode)\//,
   /\.stories\.[cm]?[jt]sx?$/,
   /\.mdx?$/,
   /(^|\/)(\.gitlab-ci\.ya?ml|mkdocs\.yml|renovate\.json|Dockerfile|CODEOWNERS|\.gitignore|\.prettierrc[^/]*|\.prettierignore|\.editorconfig)$/,
